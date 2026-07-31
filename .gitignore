@@ -1,0 +1,7 @@
+# Build artifacts — regenerated locally, never committed
+too7a-Chess.exe
+sea-prep.blob
+*.blob
+
+# Node
+node_modules/

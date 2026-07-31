@@ -232,20 +232,21 @@ class ChessGame {
 
     addCastlingMoves(sq, color, moves) {
         // Article 3.8.2.1 / 3.8.2.2: rights lost if king/rook moved, or path attacked/occupied
+        // White's back rank is squares 56-63 (e1=60); Black's is 0-7 (e8=4).
         const opp = color === 'w' ? 'b' : 'w';
-        if (color === 'w' && sq === 4) {
-            if (this.castleRights.wK && this.board[7] === 'R' && !this.board[5] && !this.board[6]) {
-                if (!this.isSquareAttacked(4, opp) && !this.isSquareAttacked(5, opp) && !this.isSquareAttacked(6, opp)) moves.push(6);
-            }
-            if (this.castleRights.wQ && this.board[0] === 'R' && !this.board[1] && !this.board[2] && !this.board[3]) {
-                if (!this.isSquareAttacked(4, opp) && !this.isSquareAttacked(3, opp) && !this.isSquareAttacked(2, opp)) moves.push(2);
-            }
-        } else if (color === 'b' && sq === 60) {
-            if (this.castleRights.bK && this.board[63] === 'r' && !this.board[61] && !this.board[62]) {
+        if (color === 'w' && sq === 60) {
+            if (this.castleRights.wK && this.board[63] === 'R' && !this.board[61] && !this.board[62]) {
                 if (!this.isSquareAttacked(60, opp) && !this.isSquareAttacked(61, opp) && !this.isSquareAttacked(62, opp)) moves.push(62);
             }
-            if (this.castleRights.bQ && this.board[56] === 'r' && !this.board[57] && !this.board[58] && !this.board[59]) {
+            if (this.castleRights.wQ && this.board[56] === 'R' && !this.board[57] && !this.board[58] && !this.board[59]) {
                 if (!this.isSquareAttacked(60, opp) && !this.isSquareAttacked(59, opp) && !this.isSquareAttacked(58, opp)) moves.push(58);
+            }
+        } else if (color === 'b' && sq === 4) {
+            if (this.castleRights.bK && this.board[7] === 'r' && !this.board[5] && !this.board[6]) {
+                if (!this.isSquareAttacked(4, opp) && !this.isSquareAttacked(5, opp) && !this.isSquareAttacked(6, opp)) moves.push(6);
+            }
+            if (this.castleRights.bQ && this.board[0] === 'r' && !this.board[1] && !this.board[2] && !this.board[3]) {
+                if (!this.isSquareAttacked(4, opp) && !this.isSquareAttacked(3, opp) && !this.isSquareAttacked(2, opp)) moves.push(2);
             }
         }
     }
@@ -257,6 +258,13 @@ class ChessGame {
         const [fr, fc] = sqToRC(from);
         const [tr, tc] = sqToRC(to);
 
+        const moveInfo = {
+            from, to, piece: p, color: this.getColor(p),
+            captured: captured || null, capturedSquare: captured ? to : null,
+            isCastle: false, rookFrom: null, rookTo: null,
+            isPromotion: false
+        };
+
         // En passant capture (3.7.3.1/3.7.3.2): captured pawn is beside the destination, not on it
         if (type === 'P' && !captured && fc !== tc) {
             const capSq = rcToSq(fr, tc);
@@ -265,6 +273,8 @@ class ChessGame {
                 delete this.board[capSq];
                 if (this.getColor(cap) === 'w') this.capturedW.push(cap);
                 else this.capturedB.push(cap);
+                moveInfo.captured = cap;
+                moveInfo.capturedSquare = capSq;
             }
         }
 
@@ -275,14 +285,19 @@ class ChessGame {
 
         // Castling (3.8.2): move king two squares, rook jumps to the crossed square
         if (type === 'K' && Math.abs(tc - fc) === 2) {
+            moveInfo.isCastle = true;
             if (tc > fc) {
                 const rook = this.board[from + 3];
                 this.board[from + 1] = rook;
                 delete this.board[from + 3];
+                moveInfo.rookFrom = from + 3;
+                moveInfo.rookTo = from + 1;
             } else {
                 const rook = this.board[from - 4];
                 this.board[from - 1] = rook;
                 delete this.board[from - 4];
+                moveInfo.rookFrom = from - 4;
+                moveInfo.rookTo = from - 1;
             }
         }
 
@@ -315,6 +330,7 @@ class ChessGame {
         if (type === 'P' && (tr === 0 || tr === 7)) {
             this.board[to] = this.getColor(p) === 'w' ? 'Q' : 'q';
             this.promotedSquare = to;
+            moveInfo.isPromotion = true;
         } else {
             this.board[to] = p;
         }
@@ -331,7 +347,7 @@ class ChessGame {
         this.lastMoveFrom = from;
         this.lastMoveTo = to;
         this.turn = this.turn === 'w' ? 'b' : 'w';
-        return true;
+        return moveInfo;
     }
 
     isInCheck(color) {
@@ -356,12 +372,14 @@ class ChessGame {
     }
 }
 
+import * as Renderer3D from './renderer3d.js';
+
 const game = new ChessGame();
 let selected = null;
 let validMoves = [];
-let difficulty = 2;
 let THINK_TIME_MS = 3000; // Stockfish "go movetime" — how long it analyzes before moving
 let stockfish = null;
+let inputLocked = false; // blocks clicks while a move is animating or the engine is thinking
 
 function initEngine() {
     updateStatus('Loading Stockfish engine...', false);
@@ -370,54 +388,42 @@ function initEngine() {
     });
 }
 
-function render() {
-    const board = document.getElementById('chessboard');
-    board.innerHTML = '';
-    for (let i = 0; i < 64; i++) {
-        const sq = document.createElement('div');
-        const row = Math.floor(i / 8), col = i % 8;
-        const isLight = (row + col) % 2 === 0;
-
-        sq.className = `square ${isLight ? 'light' : 'dark'}`;
-        sq.onclick = () => selectSquare(i);
-
-        if (selected === i) sq.classList.add('selected');
-        if (validMoves.includes(i)) sq.classList.add(game.board[i] ? 'capture' : 'valid-move');
-
-        if (game.board[i]) {
-            const piece = document.createElement('span');
-            const color = game.getColor(game.board[i]);
-            piece.className = `piece ${color === 'w' ? 'white' : 'black'}`;
-            piece.textContent = game.getPieceSymbol(game.board[i]);
-            sq.appendChild(piece);
-        }
-
-        board.appendChild(sq);
-    }
-    updateUI();
+function initBoard3D() {
+    Renderer3D.init(document.getElementById('board3d'), (sq) => selectSquare(sq));
+    Renderer3D.resetBoard(game);
+    refreshHighlights();
 }
 
-function selectSquare(sq) {
-    if (game.turn === 'b') return;
+function refreshHighlights() {
+    const checkSq = game.isInCheck(game.turn) ? game.findKing(game.turn) : null;
+    Renderer3D.setSelection(selected, validMoves, checkSq);
+}
+
+async function selectSquare(sq) {
+    if (inputLocked || game.turn === 'b') return;
 
     if (selected !== null && validMoves.includes(sq)) {
-        game.movePiece(selected, sq);
+        inputLocked = true;
+        const moveInfo = game.movePiece(selected, sq);
         selected = null;
         validMoves = [];
-        render();
+        refreshHighlights();
+        await Renderer3D.animateMove(moveInfo);
+        updateUI();
+
         if (game.promotedSquare !== null) {
-            showPromotionPicker(game.promotedSquare, 'w', afterWhiteMoveCompletes);
-        } else {
-            afterWhiteMoveCompletes();
+            await showPromotionPicker(game.promotedSquare, 'w');
         }
+        inputLocked = false;
+        afterWhiteMoveCompletes();
     } else if (game.board[sq] && game.getColor(game.board[sq]) === game.turn) {
         selected = sq;
         validMoves = game.getLegalMoves(sq);
-        render();
+        refreshHighlights();
     } else {
         selected = null;
         validMoves = [];
-        render();
+        refreshHighlights();
     }
 }
 
@@ -427,30 +433,33 @@ function afterWhiteMoveCompletes() {
     } else if (game.isStalemate('b')) {
         updateStatus('Stalemate! Draw!', false);
     } else {
-        setTimeout(aiMove, 800);
+        setTimeout(aiMove, 500);
     }
 }
 
 // Article 3.7.3.3/3.7.3.4: promotion is the player's choice, not restricted to captured pieces.
-function showPromotionPicker(sq, color, onDone) {
-    const overlay = document.getElementById('promoOverlay');
-    overlay.innerHTML = '';
-    const choices = ['Q', 'R', 'B', 'N'];
-    choices.forEach(ch => {
-        const btn = document.createElement('button');
-        btn.className = 'promo-btn';
-        const pieceChar = color === 'w' ? ch : ch.toLowerCase();
-        btn.innerHTML = `<span class="piece ${color === 'w' ? 'white' : 'black'}">${game.getPieceSymbol(pieceChar)}</span>`;
-        btn.onclick = () => {
-            game.board[sq] = pieceChar;
-            game.promotedSquare = null;
-            overlay.style.display = 'none';
-            render();
-            onDone();
-        };
-        overlay.appendChild(btn);
+// Returns a Promise so the caller can await the pick before proceeding.
+function showPromotionPicker(sq, color) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('promoOverlay');
+        overlay.innerHTML = '';
+        const choices = ['Q', 'R', 'B', 'N'];
+        choices.forEach(ch => {
+            const btn = document.createElement('button');
+            btn.className = 'promo-btn';
+            const pieceChar = color === 'w' ? ch : ch.toLowerCase();
+            btn.innerHTML = `<span class="piece ${color === 'w' ? 'white' : 'black'}">${game.getPieceSymbol(pieceChar)}</span>`;
+            btn.onclick = async () => {
+                game.board[sq] = pieceChar;
+                game.promotedSquare = null;
+                overlay.style.display = 'none';
+                await Renderer3D.morphPromotion(sq, pieceChar);
+                resolve();
+            };
+            overlay.appendChild(btn);
+        });
+        overlay.style.display = 'flex';
     });
-    overlay.style.display = 'flex';
 }
 
 // Converts a UCI square like "e4" to a 0-63 board index.
@@ -458,7 +467,7 @@ function algebraicToSq(alg) {
     const col = alg.charCodeAt(0) - 97;
     const rank = parseInt(alg[1], 10);
     const row = 8 - rank;
-    return rcToSq(row, col);
+    return row * 8 + col;
 }
 
 async function aiMove() {
@@ -469,11 +478,13 @@ async function aiMove() {
     }
     if (game.isCheckmate('b') || game.isStalemate('b')) return;
 
+    inputLocked = true;
     updateStatus('Stockfish is thinking...', false);
     const fen = game.toFEN();
     const uciMove = await stockfish.getBestMove(fen, THINK_TIME_MS);
 
     if (!uciMove || uciMove === '(none)') {
+        inputLocked = false;
         if (game.isCheckmate('b')) updateStatus('Checkmate! White Wins!', true);
         else updateStatus('Stalemate! Draw!', false);
         return;
@@ -483,16 +494,20 @@ async function aiMove() {
     const to = algebraicToSq(uciMove.slice(2, 4));
     const promo = uciMove.length > 4 ? uciMove[4] : null; // q/r/b/n
 
-    game.movePiece(from, to);
+    const moveInfo = game.movePiece(from, to);
+    await Renderer3D.animateMove(moveInfo);
+
     if (promo && game.promotedSquare !== null) {
         // Article 3.7.3.3: honor the engine's chosen promotion piece (movePiece defaults to Queen)
-        const current = game.board[game.promotedSquare];
-        const isWhitePiece = current === current.toUpperCase();
         const map = { q: 'Q', r: 'R', b: 'B', n: 'N' };
-        game.board[game.promotedSquare] = isWhitePiece ? map[promo] : map[promo].toLowerCase();
+        const letter = map[promo].toLowerCase(); // Black is the only side the AI promotes
+        game.board[game.promotedSquare] = letter;
+        await Renderer3D.morphPromotion(game.promotedSquare, letter);
     }
     game.promotedSquare = null;
-    render();
+    updateUI();
+    refreshHighlights();
+    inputLocked = false;
 
     if (game.isCheckmate('w')) updateStatus('Checkmate! Black Wins!', true);
     else if (game.isStalemate('w')) updateStatus('Stalemate! Draw!', false);
@@ -517,13 +532,20 @@ function updateUI() {
 }
 
 document.getElementById('difficulty').onchange = (e) => THINK_TIME_MS = parseInt(e.target.value);
-document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); updateStatus('New Game!', false); };
-document.getElementById('flip').onclick = () => {
-    const b = document.getElementById('chessboard');
-    b.style.transform = b.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
+document.getElementById('newGame').onclick = () => {
+    game.reset(); selected = null; validMoves = [];
+    Renderer3D.resetBoard(game);
+    updateUI();
+    updateStatus('New Game!', false);
 };
+document.getElementById('flip').onclick = () => Renderer3D.flipCamera();
 document.getElementById('reset').onclick = () => {
-    if (confirm('Reset?')) { game.reset(); selected = null; validMoves = []; render(); updateStatus('Reset!', false); }
+    if (confirm('Reset?')) {
+        game.reset(); selected = null; validMoves = [];
+        Renderer3D.resetBoard(game);
+        updateUI();
+        updateStatus('Reset!', false);
+    }
 };
 document.getElementById('exportBtn').onclick = () => {
     const a = document.createElement('a');
@@ -542,12 +564,16 @@ document.getElementById('loadBtn').onclick = () => {
         game.board = saved.board;
         game.moveHistory = saved.hist;
         game.turn = saved.turn;
-        render();
+        selected = null;
+        validMoves = [];
+        Renderer3D.resetBoard(game);
+        updateUI();
         updateStatus('✓ Loaded', false);
     } else {
         updateStatus('No save', true);
     }
 };
 
-render();
+initBoard3D();
+updateUI();
 initEngine();

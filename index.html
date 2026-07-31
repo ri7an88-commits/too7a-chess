@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>too7a Chess - FIDE Compliant</title>
+    <title>too7a Chess - 3D FIDE Compliant</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    { "imports": { "three": "./lib/three.module.js" } }
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --gold: #d4af37; --white-piece: #f5e6d3; --black-piece: #2c2c2c; }
@@ -102,53 +105,18 @@
         button.danger { border-color: #e74c3c; color: #e74c3c; }
         button.danger:hover { background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(231, 76, 60, 0.2)); }
 
-        .chessboard {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            gap: 0;
+        .board-wrapper {
+            position: relative;
             width: 100%;
             aspect-ratio: 1;
-            background: linear-gradient(135deg, #3d2817 0%, #2a1810 100%);
-            padding: 15px;
             border-radius: 15px;
+            overflow: hidden;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
             border: 4px solid var(--gold);
         }
 
-        .square {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3em;
-            cursor: pointer;
-            user-select: none;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .square.light { background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%); }
-        .square.dark { background: linear-gradient(135deg, #a68875 0%, #8b6f47 100%); }
-        .square:hover { filter: brightness(1.2); transform: scale(1.03); }
-        .square.selected { background: linear-gradient(135deg, #ffd700, #ffed4e) !important; box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5); animation: pulse 0.6s ease-in-out infinite; }
-
-        @keyframes pulse { 0%, 100% { transform: scale(1.03); } 50% { transform: scale(1.08); } }
-
-        .square.valid-move::after { content: ''; width: 14px; height: 14px; background: radial-gradient(circle, rgba(15, 52, 96, 0.8), rgba(15, 52, 96, 0.4)); border-radius: 50%; }
-        .square.capture::after { content: '●'; font-size: 0.5em; color: #e74c3c; }
-
-        .piece {
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
-            transition: all 0.15s ease;
-            cursor: grab;
-        }
-
-        .piece.white { color: var(--white-piece); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); }
-        .piece.black { color: var(--black-piece); text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3); }
-        .piece:hover { filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.6)); transform: scale(1.12) translateY(-3px); }
+        #board3d { width: 100%; height: 100%; cursor: grab; }
+        #board3d:active { cursor: grabbing; }
 
         .move-history { max-height: 200px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
         .move-tag {
@@ -177,6 +145,8 @@
         .status-box.check { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
 
         .pieces-row { display: flex; gap: 4px; flex-wrap: wrap; font-size: 1.5em; }
+        .piece.white { color: var(--white-piece); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); }
+        .piece.black { color: var(--black-piece); text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3); }
 
         .promo-btn {
             width: 90px;
@@ -200,7 +170,7 @@
         @media (max-width: 1200px) {
             .container { grid-template-columns: 1fr; gap: 20px; }
             .header h1 { font-size: 2.2em; }
-            .chessboard { max-width: 500px; justify-self: center; }
+            .board-wrapper { max-width: 500px; justify-self: center; }
         }
     </style>
 </head>
@@ -208,7 +178,7 @@
     <div class="app">
         <div class="header">
             <h1>♞ TOO7A CHESS ♞</h1>
-            <p>FIDE INTERNATIONAL RULES - COMPLETE CHESS ENGINE</p>
+            <p>3D BOARD · FIDE RULES · STOCKFISH 18</p>
         </div>
 
         <div class="container">
@@ -239,17 +209,18 @@
                 <button id="flip">🔄 Flip Board</button>
                 <button class="danger" id="reset">🗑️ Reset</button>
                 <div class="status-box" id="gameStatus">Ready to play!</div>
+                <div class="status-box" style="margin-top:8px; font-size:0.75em;">🖱️ Drag to rotate · Scroll to zoom · Click a piece, then a square</div>
             </div>
 
-            <div style="position: relative;">
-                <div class="chessboard" id="chessboard"></div>
-                <div id="promoOverlay" style="display:none; position:absolute; inset:0; background:rgba(15,20,35,0.92); border-radius:15px; align-items:center; justify-content:center; gap:15px; z-index:10;"></div>
+            <div class="board-wrapper">
+                <div id="board3d"></div>
+                <div id="promoOverlay" style="display:none; position:absolute; inset:0; background:rgba(15,20,35,0.92); align-items:center; justify-content:center; gap:15px; z-index:10;"></div>
             </div>
 
             <div class="panel">
                 <div class="panel-title">📋 Move History</div>
                 <div class="move-history" id="moveHistory"></div>
-                
+
                 <div class="panel-title" style="margin-top: 20px;">💾 Save Game</div>
                 <button id="exportBtn">📥 Export PGN</button>
                 <button id="saveBtn">💿 Save</button>
@@ -265,6 +236,6 @@
     </div>
 
     <script src="ai-stockfish.js"></script>
-    <script src="engine.js"></script>
+    <script type="module" src="engine.js"></script>
 </body>
 </html>
