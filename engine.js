@@ -37,6 +37,7 @@ class ChessGame {
         this.castleRights = { wK: true, wQ: true, bK: true, bQ: true };
         this.lastMoveFrom = null;
         this.lastMoveTo = null;
+        this.promotedSquare = null; // set when a pawn reaches the last rank; UI offers the choice
     }
 
     getPiece(sq) { return this.board[sq] || null; }
@@ -173,15 +174,25 @@ class ChessGame {
             });
         }
 
-        // Article 3.9.2: no move may leave/place own king in check
+        // Article 3.9.2: no move may leave/place own king in check.
+        // Note: for en passant, the captured pawn sits BESIDE the destination square,
+        // not on it — the simulation must remove it there or a discovered check is missed.
         return moves.filter(to => {
             const cap = this.board[to];
+            const [tr2, tc2] = sqToRC(to);
+            let epSq = null, epPiece = null;
+            if (type === 'P' && cap === undefined && tc2 !== col) {
+                epSq = rcToSq(row, tc2);
+                epPiece = this.board[epSq];
+                if (epPiece) delete this.board[epSq];
+            }
             this.board[to] = p;
             delete this.board[sq];
             const king = this.findKing(this.turn);
             const legal = !this.isSquareAttacked(king, this.turn === 'w' ? 'b' : 'w');
             this.board[sq] = p;
             if (cap !== undefined) this.board[to] = cap; else delete this.board[to];
+            if (epPiece) this.board[epSq] = epPiece;
             return legal;
         });
     }
@@ -264,9 +275,13 @@ class ChessGame {
             this.enPassantTarget = rcToSq((fr + tr) / 2, fc);
         }
 
-        // Promotion (3.7.3.3) — auto-queen; UI can be extended to prompt for R/B/N
+        // Promotion (3.7.3.3): pawn reaching the last rank MUST be exchanged for a piece
+        // of the player's choice (Q/R/B/N — 3.7.3.4). Default to Queen here; promotedSquare
+        // flags the square so the UI can offer the actual choice before the turn proceeds.
+        this.promotedSquare = null;
         if (type === 'P' && (tr === 0 || tr === 7)) {
             this.board[to] = this.getColor(p) === 'w' ? 'Q' : 'q';
+            this.promotedSquare = to;
         } else {
             this.board[to] = p;
         }
@@ -344,12 +359,10 @@ function selectSquare(sq) {
         selected = null;
         validMoves = [];
         render();
-        if (game.isCheckmate('b')) {
-            updateStatus('Checkmate! White Wins!', true);
-        } else if (game.isStalemate('b')) {
-            updateStatus('Stalemate! Draw!', false);
+        if (game.promotedSquare !== null) {
+            showPromotionPicker(game.promotedSquare, 'w', afterWhiteMoveCompletes);
         } else {
-            setTimeout(aiMove, 800);
+            afterWhiteMoveCompletes();
         }
     } else if (game.board[sq] && game.getColor(game.board[sq]) === game.turn) {
         selected = sq;
@@ -360,6 +373,38 @@ function selectSquare(sq) {
         validMoves = [];
         render();
     }
+}
+
+function afterWhiteMoveCompletes() {
+    if (game.isCheckmate('b')) {
+        updateStatus('Checkmate! White Wins!', true);
+    } else if (game.isStalemate('b')) {
+        updateStatus('Stalemate! Draw!', false);
+    } else {
+        setTimeout(aiMove, 800);
+    }
+}
+
+// Article 3.7.3.3/3.7.3.4: promotion is the player's choice, not restricted to captured pieces.
+function showPromotionPicker(sq, color, onDone) {
+    const overlay = document.getElementById('promoOverlay');
+    overlay.innerHTML = '';
+    const choices = ['Q', 'R', 'B', 'N'];
+    choices.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = 'promo-btn';
+        const pieceChar = color === 'w' ? ch : ch.toLowerCase();
+        btn.innerHTML = `<span class="piece ${color === 'w' ? 'white' : 'black'}">${game.getPieceSymbol(pieceChar)}</span>`;
+        btn.onclick = () => {
+            game.board[sq] = pieceChar;
+            game.promotedSquare = null;
+            overlay.style.display = 'none';
+            render();
+            onDone();
+        };
+        overlay.appendChild(btn);
+    });
+    overlay.style.display = 'flex';
 }
 
 function aiMove() {

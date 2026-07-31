@@ -178,6 +178,21 @@
 
         .pieces-row { display: flex; gap: 4px; flex-wrap: wrap; font-size: 1.5em; }
 
+        .promo-btn {
+            width: 90px;
+            height: 90px;
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.1));
+            border-radius: 12px;
+            font-size: 2.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .promo-btn:hover { background: linear-gradient(135deg, rgba(212,175,55,0.5), rgba(212,175,55,0.25)); transform: scale(1.08); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(212, 175, 55, 0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold), #a68857); border-radius: 10px; }
@@ -221,7 +236,10 @@
                 <div class="status-box" id="gameStatus">Ready to play!</div>
             </div>
 
-            <div class="chessboard" id="chessboard"></div>
+            <div style="position: relative;">
+                <div class="chessboard" id="chessboard"></div>
+                <div id="promoOverlay" style="display:none; position:absolute; inset:0; background:rgba(15,20,35,0.92); border-radius:15px; align-items:center; justify-content:center; gap:15px; z-index:10;"></div>
+            </div>
 
             <div class="panel">
                 <div class="panel-title">📋 Move History</div>
