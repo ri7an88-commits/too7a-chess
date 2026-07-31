@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>too7a Chess - Premium Edition</title>
+    <title>too7a Chess - Luxury Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --silver: #c0c0c0;
         }
 
         html, body {
@@ -18,40 +24,92 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f3a 50%, #16213e 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            color: #f0f0f0;
         }
 
-        .container {
-            background: rgba(20, 20, 40, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            padding: 40px;
-            display: grid;
-            grid-template-columns: 1fr 600px 1fr;
-            gap: 40px;
-            max-width: 1400px;
-            width: 95%;
-            max-height: 90vh;
+        .app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent),
+                        radial-gradient(circle at bottom left, rgba(15, 52, 96, 0.2), transparent);
             overflow-y: auto;
         }
 
         .header {
-            grid-column: 1 / -1;
             text-align: center;
-            margin-bottom: 20px;
-            animation: slideDown 0.6s ease-out;
+            padding: 40px 20px;
+            border-bottom: 3px solid var(--gold);
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.05), transparent);
+            animation: slideDown 0.8s ease-out;
         }
 
         @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #d4af37 0%, #f0e6d2 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #c0c0c0;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 700px 1fr;
+            gap: 40px;
+            padding: 40px;
+            max-width: 2000px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .panel {
+            background: linear-gradient(135deg, rgba(30, 33, 62, 0.8), rgba(15, 52, 96, 0.6));
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 175, 55, 0.2);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+            animation: panelSlide 0.8s ease-out backwards;
+        }
+
+        .panel:nth-of-type(1) { animation-delay: 0.3s; }
+        .panel:nth-of-type(2) { animation-delay: 0.4s; }
+        .panel:nth-of-type(3) { animation-delay: 0.5s; }
+
+        @keyframes panelSlide {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -59,189 +117,145 @@
             }
         }
 
-        .header h1 {
-            font-size: 3em;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-
-        .header p {
-            color: #aaa;
-            font-size: 0.95em;
-        }
-
-        .game-wrapper {
-            display: contents;
-        }
-
-        .left-panel, .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            animation: slideIn 0.8s ease-out;
-        }
-
-        .left-panel {
-            animation-delay: 0.2s;
-        }
-
-        .right-panel {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .right-panel {
-            animation-direction: reverse;
-        }
-
-        .panel {
-            background: linear-gradient(180deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
         .panel:hover {
-            border-color: rgba(102, 126, 234, 0.6);
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.15), inset 0 1px 0 rgba(212, 175, 55, 0.3);
+            transform: translateY(-5px);
         }
 
-        .panel h3 {
-            color: #667eea;
-            font-size: 1.2em;
-            margin-bottom: 15px;
+        .panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            color: var(--gold);
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 15px;
+            font-weight: 700;
         }
 
-        .stat-item {
+        .panel-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+
+        .stat-row {
             display: flex;
             justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-            color: #ddd;
-            font-size: 0.95em;
         }
 
-        .stat-item:last-child {
+        .stat-row:last-child {
             border-bottom: none;
         }
 
-        .stat-value {
-            color: #667eea;
-            font-weight: 600;
+        .stat-label {
+            color: #a8a8a8;
+            font-weight: 500;
+            font-size: 0.95em;
         }
 
-        select, input {
-            background: rgba(102, 126, 234, 0.15);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            color: #ddd;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.95em;
+        .stat-value {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 52, 96, 0.5);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
-            font-weight: 600;
+            font-size: 0.95em;
+            margin-top: 10px;
         }
 
-        select:hover, select:focus,
-        input:hover, input:focus {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.25);
+        select:hover, select:focus {
+            border-color: var(--gold);
+            background: rgba(15, 52, 96, 0.7);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
             outline: none;
-            box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
         }
 
-        .button-group {
+        .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
-        .button-group.full {
+        .btn-group.full {
             grid-template-columns: 1fr;
         }
 
         button {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95em;
+            padding: 14px 20px;
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+            color: var(--gold);
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 0.9em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            overflow: hidden;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
+        button:hover {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2));
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3), inset 0 0 20px rgba(212, 175, 55, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn-secondary {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
         }
 
         button:active {
             transform: translateY(0);
         }
 
-        .board-container {
-            animation: boardIn 0.8s ease-out 0.3s both;
+        .btn-danger {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.1));
         }
 
-        @keyframes boardIn {
+        .btn-danger:hover {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(231, 76, 60, 0.2));
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3), inset 0 0 20px rgba(231, 76, 60, 0.1);
+        }
+
+        .board-wrapper {
+            grid-column: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: boardSlide 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes boardSlide {
             from {
                 opacity: 0;
-                transform: scale(0.95);
+                transform: scale(0.95) rotateX(20deg);
             }
             to {
                 opacity: 1;
-                transform: scale(1);
+                transform: scale(1) rotateX(0);
             }
         }
 
@@ -249,24 +263,37 @@
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            gap: 2px;
+            gap: 0;
             width: 100%;
             aspect-ratio: 1;
-            background: #0a0a1a;
-            padding: 12px;
-            border-radius: 15px;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 20px 60px rgba(0, 0, 0, 0.4);
-            border: 3px solid rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #3d2817 0%, #2a1810 100%);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            border: 4px solid var(--gold);
+            position: relative;
+        }
+
+        .chessboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03), transparent);
+            border-radius: 16px;
+            pointer-events: none;
         }
 
         .square {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.5em;
+            font-size: 3.5em;
             cursor: pointer;
             user-select: none;
-            border-radius: 4px;
+            border-radius: 8px;
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
@@ -279,111 +306,137 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
             pointer-events: none;
         }
 
         .square.light {
-            background: linear-gradient(135deg, #e8d5b7 0%, #d4b896 100%);
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
+            color: #1a1a1a;
         }
 
         .square.dark {
-            background: linear-gradient(135deg, #b8956a 0%, #9b8050 100%);
+            background: linear-gradient(135deg, #a68875 0%, #8b6f47 100%);
+            color: #f5e6d3;
         }
 
         .square:hover {
-            filter: brightness(1.15);
-            transform: scale(1.02);
+            filter: brightness(1.2) saturate(1.1);
+            transform: scale(1.05);
         }
 
         .square.selected {
-            background: linear-gradient(135deg, #f4d03f, #f5b041) !important;
-            box-shadow: inset 0 0 20px rgba(245, 176, 65, 0.5), 0 0 20px rgba(245, 176, 65, 0.3);
+            background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
+            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.5);
             animation: pulse 0.6s ease-in-out infinite;
+            color: #1a1a1a;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
         }
 
         .square.valid-move::after {
             content: '';
-            width: 16px;
-            height: 16px;
-            background: rgba(102, 126, 234, 0.6);
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle, rgba(15, 52, 96, 0.8), rgba(15, 52, 96, 0.4));
             border-radius: 50%;
-            animation: pulse 0.8s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(15, 52, 96, 0.6);
         }
 
         .square.capture::after {
-            content: '';
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(245, 87, 108, 0.8);
-            border-radius: 50%;
-            animation: pulse 0.8s ease-in-out infinite;
+            content: '●';
+            font-size: 0.6em;
+            color: #e74c3c;
+            animation: throb 0.8s ease-in-out infinite;
+        }
+
+        @keyframes throb {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
 
         .piece {
             position: relative;
             z-index: 2;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-            transition: all 0.1s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+            transition: all 0.15s cubic-bezier(0.23, 1, 0.320, 1);
             cursor: grab;
+            user-select: none;
         }
 
         .piece:hover {
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) brightness(1.1);
-            transform: scale(1.1);
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6)) brightness(1.1);
+            transform: scale(1.15) translateY(-5px);
         }
 
         .piece:active {
             cursor: grabbing;
-            transform: scale(1.15);
+            transform: scale(1.2) translateY(-8px);
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .move-history {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
         }
 
-        .move-item {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
-            color: #667eea;
-            padding: 6px 12px;
-            margin: 4px;
-            border-radius: 6px;
+        .move-tag {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1));
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--gold);
+            padding: 8px 14px;
+            border-radius: 20px;
             font-size: 0.85em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid rgba(102, 126, 234, 0.5);
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
 
-        .move-item:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5));
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        .move-tag:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.2));
+            border-color: var(--gold);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
         }
 
-        .eval-bar {
-            height: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+        .captured {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .eval-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
+        .captured-group h4 {
+            font-size: 0.8em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .pieces-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            font-size: 2em;
+            line-height: 1;
         }
 
         ::-webkit-scrollbar {
@@ -391,216 +444,190 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(212, 175, 55, 0.1);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #667eea, #764ba2);
+            background: linear-gradient(180deg, var(--gold), #a68857);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #764ba2, #667eea);
+            background: linear-gradient(180deg, #ffd700, var(--gold));
         }
 
-        .eval-text {
-            text-align: center;
-            font-size: 0.75em;
-            font-weight: 600;
-            color: white;
-            margin-top: 5px;
-        }
-
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .container {
                 grid-template-columns: 1fr;
                 gap: 20px;
                 padding: 20px;
             }
 
-            .left-panel, .right-panel {
+            .board-wrapper {
+                grid-column: auto;
+                max-width: 600px;
+                justify-self: center;
+            }
+
+            .right-panel {
                 grid-column: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="app">
         <div class="header">
-            <h1>♞ too7a Chess ♞</h1>
-            <p>Premium AI Chess Engine</p>
+            <h1>♞ TOO7A CHESS ♞</h1>
+            <p>LUXURY AI CHESS ENGINE</p>
         </div>
 
-        <div class="left-panel">
-            <div class="panel">
-                <h3>📊 Game Info</h3>
-                <div class="stat-item">
-                    <span>Status</span>
-                    <span class="stat-value" id="status">White to Move</span>
+        <div class="container">
+            <div class="panel" style="grid-column: 1;">
+                <div class="panel-title">⚙️ Game Control</div>
+                <div class="stat-row">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value" id="status">White's Turn</span>
                 </div>
-                <div class="stat-item">
-                    <span>Move Count</span>
+                <div class="stat-row">
+                    <span class="stat-label">Moves</span>
                     <span class="stat-value" id="moveCount">0</span>
                 </div>
-                <div class="stat-item">
-                    <span>Difficulty</span>
+                <div class="stat-row">
+                    <span class="stat-label">Difficulty</span>
                 </div>
                 <select id="difficulty">
-                    <option value="1">Easy</option>
-                    <option value="2" selected>Medium</option>
-                    <option value="3">Hard</option>
+                    <option value="1">⚪ Easy</option>
+                    <option value="2" selected>🟡 Medium</option>
+                    <option value="3">🔴 Hard</option>
                 </select>
-            </div>
-
-            <div class="panel">
-                <h3>⚔️ Controls</h3>
-                <div class="button-group full">
-                    <button class="btn-primary" id="newGame">New Game</button>
-                    <button class="btn-secondary" id="undo">Undo</button>
-                    <button class="btn-secondary" id="flip">Flip Board</button>
-                    <button class="btn-danger" id="reset">Reset</button>
+                <div class="btn-group full" style="margin-top: 25px;">
+                    <button class="btn-primary" id="newGame">🎮 New Game</button>
+                    <button class="btn-primary" id="undo">↩️ Undo</button>
+                    <button class="btn-primary" id="flip">🔄 Flip</button>
+                    <button class="btn-danger" id="reset">🗑️ Reset</button>
                 </div>
             </div>
 
-            <div class="panel">
-                <h3>📈 Evaluation</h3>
-                <div class="eval-bar">
-                    <div class="eval-fill" id="evalFill" style="width: 50%"></div>
+            <div class="board-wrapper">
+                <div id="chessboard" class="chessboard"></div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel">
+                    <div class="panel-title">📋 Moves</div>
+                    <div class="move-history" id="moveHistory"></div>
                 </div>
-                <div class="eval-text" id="evalText">0.00</div>
-            </div>
-        </div>
-
-        <div class="board-container">
-            <div id="chessboard" class="chessboard"></div>
-        </div>
-
-        <div class="right-panel">
-            <div class="panel">
-                <h3>📋 Moves</h3>
-                <div class="move-history" id="moveHistory"></div>
-            </div>
-
-            <div class="panel">
-                <h3>💾 Save/Export</h3>
-                <div class="button-group full">
-                    <button class="btn-secondary" id="exportBtn">Export PGN</button>
-                    <button class="btn-secondary" id="saveBtn">Save Game</button>
-                    <button class="btn-secondary" id="loadBtn">Load Game</button>
+                <div class="panel">
+                    <div class="panel-title">💾 Save</div>
+                    <div class="btn-group full">
+                        <button class="btn-primary" id="exportBtn">📥 Export</button>
+                        <button class="btn-primary" id="saveBtn">💿 Save</button>
+                        <button class="btn-primary" id="loadBtn">📂 Load</button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="panel">
-                <h3>♜ Captured</h3>
-                <div style="font-size: 1.5em; line-height: 1.8;">
-                    <div style="color: #aaa; font-size: 0.7em; margin-bottom: 8px;">WHITE</div>
-                    <div id="capturedW"></div>
-                    <div style="color: #aaa; font-size: 0.7em; margin: 12px 0 8px 0;">BLACK</div>
-                    <div id="capturedB"></div>
+                <div class="panel">
+                    <div class="panel-title">♜ Captured</div>
+                    <div class="captured">
+                        <div class="captured-group">
+                            <h4>⚪ White</h4>
+                            <div class="pieces-row" id="capturedW"></div>
+                        </div>
+                        <div class="captured-group">
+                            <h4>⚫ Black</h4>
+                            <div class="pieces-row" id="capturedB"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Minimal Chess.js implementation
+        const PIECES = {
+            'wP': '♙', 'wN': '♘', 'wB': '♗', 'wR': '♖', 'wQ': '♕', 'wK': '♔',
+            'bP': '♟', 'bN': '♞', 'bB': '♝', 'bR': '♜', 'bQ': '♛', 'bK': '♚'
+        };
+
         class Chess {
             constructor() {
-                this.board = this.initBoard();
-                this.turn = 'w';
-                this.moves = [];
-                this.selected = null;
+                this.reset();
             }
 
-            initBoard() {
-                const board = {};
+            reset() {
+                this.board = {};
                 const setup = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'.split('/');
                 let idx = 0;
                 setup.forEach((row, r) => {
                     let col = 0;
                     for (let c of row) {
-                        if (/\d/.test(c)) {
-                            col += parseInt(c);
-                        } else {
-                            board[r * 8 + col] = c;
+                        if (/\d/.test(c)) col += parseInt(c);
+                        else {
+                            this.board[r * 8 + col] = c;
                             col++;
                         }
                     }
                 });
-                return board;
+                this.turn = 'w';
+                this.moveHistory = [];
+                this.capturedW = [];
+                this.capturedB = [];
             }
 
-            getPiece(sq) {
-                return this.board[sq] || null;
+            getPiece(sq) { return this.board[sq] || null; }
+
+            getPieceSymbol(piece) {
+                if (!piece) return '';
+                const key = (piece === piece.toUpperCase() ? 'w' : 'b') + piece.toUpperCase();
+                return PIECES[key] || '?';
             }
 
-            movePiece(from, to) {
-                const piece = this.board[from];
-                if (!piece) return false;
-
-                const color = piece === piece.toUpperCase() ? 'w' : 'b';
-                if (color !== this.turn) return false;
-
-                this.board[to] = piece;
-                delete this.board[from];
-                this.turn = this.turn === 'w' ? 'b' : 'w';
-                this.moves.push(`${String.fromCharCode(97 + (from % 8))}${8 - Math.floor(from / 8)}-${String.fromCharCode(97 + (to % 8))}${8 - Math.floor(to / 8)}`);
-                return true;
+            getColor(piece) {
+                return piece === piece.toUpperCase() ? 'w' : 'b';
             }
 
             getLegalMoves(sq) {
                 const piece = this.board[sq];
                 if (!piece) return [];
+                const color = this.getColor(piece);
+                if (color !== this.turn) return [];
 
                 const moves = [];
+                const type = piece.toUpperCase();
                 const row = Math.floor(sq / 8);
                 const col = sq % 8;
-                const type = piece.toUpperCase();
-                const color = piece === piece.toUpperCase() ? 'w' : 'b';
-
-                if (color !== this.turn) return [];
 
                 if (type === 'P') {
                     const dir = color === 'w' ? -1 : 1;
                     const forward = sq + dir * 8;
-                    if (forward >= 0 && forward < 64 && !this.board[forward]) {
-                        moves.push(forward);
-                    }
-                    [sq + dir * 8 - 1, sq + dir * 8 + 1].forEach(target => {
-                        if (target >= 0 && target < 64 && this.board[target] && 
-                            (this.board[target] === this.board[target].toUpperCase()) !== (color === 'w')) {
-                            moves.push(target);
-                        }
+                    if (forward >= 0 && forward < 64 && !this.board[forward]) moves.push(forward);
+                    [sq + dir * 8 - 1, sq + dir * 8 + 1].forEach(t => {
+                        if (t >= 0 && t < 64 && this.board[t] && this.getColor(this.board[t]) !== color) moves.push(t);
                     });
                 } else if (type === 'N') {
-                    [sq + 6, sq + 10, sq + 15, sq + 17, sq - 6, sq - 10, sq - 15, sq - 17].forEach(target => {
-                        if (target >= 0 && target < 64 && (!this.board[target] || 
-                            (this.board[target] === this.board[target].toUpperCase()) !== (color === 'w'))) {
-                            moves.push(target);
-                        }
+                    [6, 10, 15, 17, -6, -10, -15, -17].forEach(d => {
+                        const t = sq + d;
+                        if (t >= 0 && t < 64 && (!this.board[t] || this.getColor(this.board[t]) !== color)) moves.push(t);
                     });
                 } else if (type === 'K') {
                     for (let i = -9; i <= 9; i++) {
                         if (Math.abs(i) <= 1 && sq + i >= 0 && sq + i < 64) {
-                            if (!this.board[sq + i] || (this.board[sq + i] === this.board[sq + i].toUpperCase()) !== (color === 'w')) {
-                                moves.push(sq + i);
-                            }
+                            const t = sq + i;
+                            if (!this.board[t] || this.getColor(this.board[t]) !== color) moves.push(t);
                         }
                     }
                 } else if (['R', 'B', 'Q'].includes(type)) {
-                    const directions = type === 'R' ? [1, -1, 8, -8] : type === 'B' ? [7, -7, 9, -9] : [1, -1, 8, -8, 7, -7, 9, -9];
-                    directions.forEach(dir => {
-                        let target = sq + dir;
-                        while (target >= 0 && target < 64 && Math.abs((target % 8) - col) <= 7) {
-                            if (this.board[target]) {
-                                if ((this.board[target] === this.board[target].toUpperCase()) !== (color === 'w')) {
-                                    moves.push(target);
-                                }
+                    const dirs = type === 'R' ? [1, -1, 8, -8] : type === 'B' ? [7, -7, 9, -9] : [1, -1, 8, -8, 7, -7, 9, -9];
+                    dirs.forEach(dir => {
+                        let t = sq + dir;
+                        while (t >= 0 && t < 64 && Math.abs((t % 8) - col) <= 7) {
+                            if (this.board[t]) {
+                                if (this.getColor(this.board[t]) !== color) moves.push(t);
                                 break;
                             }
-                            moves.push(target);
-                            target += dir;
+                            moves.push(t);
+                            t += dir;
                         }
                     });
                 }
@@ -608,74 +635,58 @@
                 return moves;
             }
 
-            reset() {
-                this.board = this.initBoard();
-                this.turn = 'w';
-                this.moves = [];
-            }
+            movePiece(from, to) {
+                const piece = this.board[from];
+                const captured = this.board[to];
+                if (captured) {
+                    if (this.getColor(captured) === 'w') this.capturedW.push(captured);
+                    else this.capturedB.push(captured);
+                }
 
-            undo() {
-                if (this.moves.length < 2) return;
-                // Simplified - full implementation would need move history
-                this.moves.pop();
-                this.moves.pop();
+                this.board[to] = piece;
+                delete this.board[from];
+
+                const fromSq = String.fromCharCode(97 + (from % 8)) + (8 - Math.floor(from / 8));
+                const toSq = String.fromCharCode(97 + (to % 8)) + (8 - Math.floor(to / 8));
+                this.moveHistory.push(fromSq + toSq);
+
                 this.turn = this.turn === 'w' ? 'b' : 'w';
+                return true;
             }
         }
 
-        // Game state
         const game = new Chess();
         let selected = null;
         let validMoves = [];
-        let flipped = false;
 
-        // AI - Simple random moves
-        function aiMove() {
-            if (game.turn === 'w') return;
-            const moves = [];
-            for (let i = 0; i < 64; i++) {
-                const piece = game.board[i];
-                if (piece && piece === piece.toLowerCase()) {
-                    const legal = game.getLegalMoves(i);
-                    legal.forEach(to => moves.push({from: i, to}));
-                }
-            }
-            if (moves.length) {
-                const move = moves[Math.floor(Math.random() * moves.length)];
-                game.movePiece(move.from, move.to);
-                renderBoard();
-                updateInfo();
-            }
-        }
-
-        function renderBoard() {
+        function render() {
             const board = document.getElementById('chessboard');
             board.innerHTML = '';
 
             for (let i = 0; i < 64; i++) {
-                const square = document.createElement('div');
+                const sq = document.createElement('div');
                 const row = Math.floor(i / 8);
                 const col = i % 8;
                 const isLight = (row + col) % 2 === 0;
 
-                square.className = `square ${isLight ? 'light' : 'dark'}`;
-                square.id = `sq-${i}`;
-                square.onclick = () => selectSquare(i);
+                sq.className = `square ${isLight ? 'light' : 'dark'}`;
+                sq.id = `sq-${i}`;
+                sq.onclick = () => selectSquare(i);
 
-                if (selected === i) square.classList.add('selected');
-                if (validMoves.includes(i)) {
-                    square.classList.add(game.board[i] ? 'capture' : 'valid-move');
-                }
+                if (selected === i) sq.classList.add('selected');
+                if (validMoves.includes(i)) sq.classList.add(game.board[i] ? 'capture' : 'valid-move');
 
                 if (game.board[i]) {
                     const piece = document.createElement('span');
                     piece.className = 'piece';
-                    piece.textContent = game.board[i];
-                    square.appendChild(piece);
+                    piece.textContent = game.getPieceSymbol(game.board[i]);
+                    sq.appendChild(piece);
                 }
 
-                board.appendChild(square);
+                board.appendChild(sq);
             }
+
+            updateUI();
         }
 
         function selectSquare(sq) {
@@ -685,42 +696,74 @@
                 game.movePiece(selected, sq);
                 selected = null;
                 validMoves = [];
-                renderBoard();
-                updateInfo();
-                setTimeout(aiMove, 500);
+                render();
+                setTimeout(aiMove, 800);
             } else {
                 selected = sq;
                 validMoves = game.getLegalMoves(sq);
-                renderBoard();
+                render();
             }
         }
 
-        function updateInfo() {
-            document.getElementById('status').textContent = game.turn === 'w' ? 'White to Move' : 'Black to Move';
-            document.getElementById('moveCount').textContent = game.moves.length;
-            document.getElementById('moveHistory').innerHTML = game.moves.map(m => `<div class="move-item">${m}</div>`).join('');
-            document.getElementById('evalFill').style.width = '50%';
+        function aiMove() {
+            if (game.turn === 'w') return;
+            const moves = [];
+            for (let i = 0; i < 64; i++) {
+                const piece = game.board[i];
+                if (piece && game.getColor(piece) === 'b') {
+                    const legal = game.getLegalMoves(i);
+                    legal.forEach(to => moves.push({from: i, to}));
+                }
+            }
+            if (moves.length) {
+                const move = moves[Math.floor(Math.random() * moves.length)];
+                game.movePiece(move.from, move.to);
+                render();
+            }
         }
 
-        // Event listeners
-        document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; renderBoard(); updateInfo(); };
-        document.getElementById('undo').onclick = () => { game.undo(); renderBoard(); updateInfo(); };
-        document.getElementById('flip').onclick = () => { flipped = !flipped; renderBoard(); };
-        document.getElementById('reset').onclick = () => { if (confirm('Reset?')) { game.reset(); selected = null; validMoves = []; renderBoard(); updateInfo(); } };
-        document.getElementById('exportBtn').onclick = () => { const pgn = game.moves.join(' '); downloadFile('game.pgn', pgn); };
-        document.getElementById('saveBtn').onclick = () => { localStorage.setItem('chess', JSON.stringify(game.moves)); alert('Saved!'); };
-        document.getElementById('loadBtn').onclick = () => { const data = localStorage.getItem('chess'); if (data) { alert('Loaded!'); } };
+        function updateUI() {
+            document.getElementById('status').textContent = game.turn === 'w' ? 'White\'s Turn' : 'Black\'s Turn';
+            document.getElementById('moveCount').textContent = game.moveHistory.length;
+            document.getElementById('moveHistory').innerHTML = game.moveHistory.map(m => `<div class="move-tag">${m}</div>`).join('');
+            document.getElementById('capturedW').innerHTML = game.capturedB.map(p => game.getPieceSymbol(p)).join('');
+            document.getElementById('capturedB').innerHTML = game.capturedW.map(p => game.getPieceSymbol(p)).join('');
+        }
 
-        function downloadFile(name, content) {
+        document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); };
+        document.getElementById('undo').onclick = () => { if (game.moveHistory.length > 0) render(); };
+        document.getElementById('flip').onclick = () => {
+            const b = document.getElementById('chessboard');
+            b.style.transform = b.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
+        };
+        document.getElementById('reset').onclick = () => {
+            if (confirm('Reset game?')) { game.reset(); selected = null; validMoves = []; render(); }
+        };
+        document.getElementById('exportBtn').onclick = () => {
             const a = document.createElement('a');
-            a.href = 'data:text/plain,' + encodeURIComponent(content);
-            a.download = name;
+            a.href = 'data:text/plain,' + encodeURIComponent(game.moveHistory.join(' '));
+            a.download = 'game.pgn';
             a.click();
-        }
+        };
+        document.getElementById('saveBtn').onclick = () => {
+            localStorage.setItem('chess', JSON.stringify({board: game.board, history: game.moveHistory}));
+            alert('✓ Game saved!');
+        };
+        document.getElementById('loadBtn').onclick = () => {
+            const data = localStorage.getItem('chess');
+            if (data) {
+                const saved = JSON.parse(data);
+                game.board = saved.board;
+                game.moveHistory = saved.history;
+                game.turn = 'w';
+                render();
+                alert('✓ Game loaded!');
+            } else {
+                alert('No saved game');
+            }
+        };
 
-        // Initialize
-        renderBoard();
-        updateInfo();
+        render();
     </script>
 </body>
 </html>
