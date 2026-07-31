@@ -223,12 +223,17 @@
                     <span class="stat-value" id="moveCount">0</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Difficulty</span>
+                    <span class="stat-label">Engine</span>
+                    <span class="stat-value" style="font-size:0.85em;">Stockfish 18</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Thinking Time</span>
                 </div>
                 <select id="difficulty">
-                    <option value="1">Easy (Random)</option>
-                    <option value="2" selected>Medium (Smart)</option>
-                    <option value="3">Hard (Tactical)</option>
+                    <option value="1000">Fast (1s/move)</option>
+                    <option value="3000" selected>Standard (3s/move)</option>
+                    <option value="8000">Deep (8s/move)</option>
+                    <option value="15000">Maximum (15s/move)</option>
                 </select>
                 <button id="newGame">🎮 New Game</button>
                 <button id="flip">🔄 Flip Board</button>
@@ -259,6 +264,7 @@
         </div>
     </div>
 
+    <script src="ai-stockfish.js"></script>
     <script src="engine.js"></script>
 </body>
 </html>

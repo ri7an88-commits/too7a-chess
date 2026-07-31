@@ -38,6 +38,39 @@ class ChessGame {
         this.lastMoveFrom = null;
         this.lastMoveTo = null;
         this.promotedSquare = null; // set when a pawn reaches the last rank; UI offers the choice
+        this.halfMoveClock = 0;   // FEN field 5: resets on pawn move or capture (50-move rule, Art. 9.3)
+        this.fullMoveNumber = 1;  // FEN field 6: increments after Black's move
+    }
+
+    // Exports the position as FEN so an external UCI engine (Stockfish) can analyze it.
+    toFEN() {
+        let rows = [];
+        for (let r = 0; r < 8; r++) {
+            let row = '', empty = 0;
+            for (let c = 0; c < 8; c++) {
+                const p = this.board[rcToSq(r, c)];
+                if (p) {
+                    if (empty) { row += empty; empty = 0; }
+                    row += p;
+                } else {
+                    empty++;
+                }
+            }
+            if (empty) row += empty;
+            rows.push(row);
+        }
+        const board = rows.join('/');
+        const turn = this.turn;
+        let castle = '';
+        if (this.castleRights.wK) castle += 'K';
+        if (this.castleRights.wQ) castle += 'Q';
+        if (this.castleRights.bK) castle += 'k';
+        if (this.castleRights.bQ) castle += 'q';
+        if (!castle) castle = '-';
+        const ep = this.enPassantTarget !== null
+            ? String.fromCharCode(97 + (this.enPassantTarget % 8)) + (8 - Math.floor(this.enPassantTarget / 8))
+            : '-';
+        return `${board} ${turn} ${castle} ${ep} ${this.halfMoveClock} ${this.fullMoveNumber}`;
     }
 
     getPiece(sq) { return this.board[sq] || null; }
@@ -291,6 +324,10 @@ class ChessGame {
         const toSq = String.fromCharCode(97 + tc) + (8 - tr);
         this.moveHistory.push(fromSq + toSq);
 
+        // FEN clocks (Art. 9.3 / standard FEN spec): halfmove resets on pawn move or capture
+        this.halfMoveClock = (type === 'P' || captured) ? 0 : this.halfMoveClock + 1;
+        if (this.getColor(p) === 'b') this.fullMoveNumber++;
+
         this.lastMoveFrom = from;
         this.lastMoveTo = to;
         this.turn = this.turn === 'w' ? 'b' : 'w';
@@ -323,6 +360,15 @@ const game = new ChessGame();
 let selected = null;
 let validMoves = [];
 let difficulty = 2;
+let THINK_TIME_MS = 3000; // Stockfish "go movetime" — how long it analyzes before moving
+let stockfish = null;
+
+function initEngine() {
+    updateStatus('Loading Stockfish engine...', false);
+    stockfish = new StockfishAI(() => {
+        updateStatus('Engine ready. Your move (White).', false);
+    });
+}
 
 function render() {
     const board = document.getElementById('chessboard');
@@ -407,46 +453,45 @@ function showPromotionPicker(sq, color, onDone) {
     overlay.style.display = 'flex';
 }
 
-function aiMove() {
-    const moves = [];
-    for (let i = 0; i < 64; i++) {
-        const p = game.board[i];
-        if (p && game.getColor(p) === 'b') {
-            game.getLegalMoves(i).forEach(to => moves.push({ from: i, to }));
-        }
-    }
+// Converts a UCI square like "e4" to a 0-63 board index.
+function algebraicToSq(alg) {
+    const col = alg.charCodeAt(0) - 97;
+    const rank = parseInt(alg[1], 10);
+    const row = 8 - rank;
+    return rcToSq(row, col);
+}
 
-    if (!moves.length) {
+async function aiMove() {
+    if (!stockfish || !stockfish.ready) {
+        updateStatus('Engine still loading...', false);
+        setTimeout(aiMove, 500);
+        return;
+    }
+    if (game.isCheckmate('b') || game.isStalemate('b')) return;
+
+    updateStatus('Stockfish is thinking...', false);
+    const fen = game.toFEN();
+    const uciMove = await stockfish.getBestMove(fen, THINK_TIME_MS);
+
+    if (!uciMove || uciMove === '(none)') {
         if (game.isCheckmate('b')) updateStatus('Checkmate! White Wins!', true);
         else updateStatus('Stalemate! Draw!', false);
         return;
     }
 
-    let bestMove = moves[0];
-    if (difficulty >= 2) {
-        let bestScore = -999;
-        moves.forEach(move => {
-            let score = 0;
-            const cap = game.board[move.to];
-            if (cap) {
-                const vals = { P: 1, N: 3, B: 3.5, R: 5, Q: 9 };
-                score += vals[cap.toUpperCase()] * 10;
-            }
-            if (difficulty === 3) {
-                const row = Math.floor(move.to / 8), col = move.to % 8;
-                const dist = Math.abs(3.5 - row) + Math.abs(3.5 - col);
-                score += (7 - dist) * 0.3;
-            }
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = move;
-            }
-        });
-    } else {
-        bestMove = moves[Math.floor(Math.random() * moves.length)];
-    }
+    const from = algebraicToSq(uciMove.slice(0, 2));
+    const to = algebraicToSq(uciMove.slice(2, 4));
+    const promo = uciMove.length > 4 ? uciMove[4] : null; // q/r/b/n
 
-    game.movePiece(bestMove.from, bestMove.to);
+    game.movePiece(from, to);
+    if (promo && game.promotedSquare !== null) {
+        // Article 3.7.3.3: honor the engine's chosen promotion piece (movePiece defaults to Queen)
+        const current = game.board[game.promotedSquare];
+        const isWhitePiece = current === current.toUpperCase();
+        const map = { q: 'Q', r: 'R', b: 'B', n: 'N' };
+        game.board[game.promotedSquare] = isWhitePiece ? map[promo] : map[promo].toLowerCase();
+    }
+    game.promotedSquare = null;
     render();
 
     if (game.isCheckmate('w')) updateStatus('Checkmate! Black Wins!', true);
@@ -471,7 +516,7 @@ function updateUI() {
     document.getElementById('capturedB').innerHTML = game.capturedW.map(p => `<span class="piece white">${game.getPieceSymbol(p)}</span>`).join('');
 }
 
-document.getElementById('difficulty').onchange = (e) => difficulty = parseInt(e.target.value);
+document.getElementById('difficulty').onchange = (e) => THINK_TIME_MS = parseInt(e.target.value);
 document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); updateStatus('New Game!', false); };
 document.getElementById('flip').onclick = () => {
     const b = document.getElementById('chessboard');
@@ -505,4 +550,4 @@ document.getElementById('loadBtn').onclick = () => {
 };
 
 render();
-updateStatus('Ready!', false);
+initEngine();
