@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>too7a Chess - Luxury Edition</title>
+    <title>too7a Chess - Premium AI Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,7 +14,8 @@
 
         :root {
             --gold: #d4af37;
-            --silver: #c0c0c0;
+            --white-piece: #f5e6d3;
+            --black-piece: #2c2c2c;
         }
 
         html, body {
@@ -102,19 +103,9 @@
             animation: panelSlide 0.8s ease-out backwards;
         }
 
-        .panel:nth-of-type(1) { animation-delay: 0.3s; }
-        .panel:nth-of-type(2) { animation-delay: 0.4s; }
-        .panel:nth-of-type(3) { animation-delay: 0.5s; }
-
         @keyframes panelSlide {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .panel:hover {
@@ -128,9 +119,6 @@
             font-size: 1.5em;
             color: var(--gold);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
             border-bottom: 2px solid rgba(212, 175, 55, 0.2);
             padding-bottom: 15px;
             font-weight: 700;
@@ -143,6 +131,8 @@
             background: var(--gold);
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            display: inline-block;
+            margin-right: 10px;
         }
 
         .stat-row {
@@ -214,13 +204,12 @@
             transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
             text-transform: uppercase;
             letter-spacing: 1px;
-            overflow: hidden;
         }
 
         button:hover {
             border-color: var(--gold);
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2));
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
             transform: translateY(-2px);
         }
 
@@ -231,13 +220,11 @@
         .btn-danger {
             border-color: #e74c3c;
             color: #e74c3c;
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.1));
         }
 
         .btn-danger:hover {
-            border-color: #e74c3c;
             background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(231, 76, 60, 0.2));
-            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3), inset 0 0 20px rgba(231, 76, 60, 0.1);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
         }
 
         .board-wrapper {
@@ -249,14 +236,8 @@
         }
 
         @keyframes boardSlide {
-            from {
-                opacity: 0;
-                transform: scale(0.95) rotateX(20deg);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) rotateX(0);
-            }
+            from { opacity: 0; transform: scale(0.95) rotateX(20deg); }
+            to { opacity: 1; transform: scale(1) rotateX(0); }
         }
 
         .chessboard {
@@ -274,18 +255,6 @@
             position: relative;
         }
 
-        .chessboard::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03), transparent);
-            border-radius: 16px;
-            pointer-events: none;
-        }
-
         .square {
             display: flex;
             justify-content: center;
@@ -296,7 +265,6 @@
             border-radius: 8px;
             transition: all 0.2s ease;
             position: relative;
-            overflow: hidden;
         }
 
         .square::before {
@@ -308,16 +276,15 @@
             bottom: 0;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
             pointer-events: none;
+            border-radius: 8px;
         }
 
         .square.light {
             background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
-            color: #1a1a1a;
         }
 
         .square.dark {
             background: linear-gradient(135deg, #a68875 0%, #8b6f47 100%);
-            color: #f5e6d3;
         }
 
         .square:hover {
@@ -329,7 +296,6 @@
             background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
             box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.5);
             animation: pulse 0.6s ease-in-out infinite;
-            color: #1a1a1a;
         }
 
         @keyframes pulse {
@@ -354,28 +320,37 @@
         }
 
         @keyframes throb {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         .piece {
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-            transition: all 0.15s cubic-bezier(0.23, 1, 0.320, 1);
+            transition: all 0.15s ease;
             cursor: grab;
             user-select: none;
         }
 
+        .piece.white {
+            color: var(--white-piece);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .piece.black {
+            color: var(--black-piece);
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
         .piece:hover {
-            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6)) brightness(1.1);
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6)) brightness(1.2);
             transform: scale(1.15) translateY(-5px);
         }
 
         .piece:active {
             cursor: grabbing;
             transform: scale(1.2) translateY(-8px);
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
         }
 
         .right-panel {
@@ -405,14 +380,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            backdrop-filter: blur(10px);
         }
 
         .move-tag:hover {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.2));
             border-color: var(--gold);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
         }
 
         .captured {
@@ -428,7 +401,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
-            font-weight: 600;
         }
 
         .pieces-row {
@@ -437,6 +409,23 @@
             flex-wrap: wrap;
             font-size: 2em;
             line-height: 1;
+        }
+
+        .status-message {
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.2);
+            border-left: 4px solid var(--gold);
+            border-radius: 8px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .status-message.danger {
+            background: rgba(231, 76, 60, 0.2);
+            border-left-color: #e74c3c;
+            color: #e74c3c;
         }
 
         ::-webkit-scrollbar {
@@ -453,10 +442,6 @@
             border-radius: 10px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #ffd700, var(--gold));
-        }
-
         @media (max-width: 1400px) {
             .container {
                 grid-template-columns: 1fr;
@@ -469,10 +454,6 @@
                 max-width: 600px;
                 justify-self: center;
             }
-
-            .right-panel {
-                grid-column: auto;
-            }
         }
     </style>
 </head>
@@ -480,7 +461,7 @@
     <div class="app">
         <div class="header">
             <h1>♞ TOO7A CHESS ♞</h1>
-            <p>LUXURY AI CHESS ENGINE</p>
+            <p>INTELLIGENT AI ENGINE</p>
         </div>
 
         <div class="container">
@@ -498,16 +479,16 @@
                     <span class="stat-label">Difficulty</span>
                 </div>
                 <select id="difficulty">
-                    <option value="1">⚪ Easy</option>
-                    <option value="2" selected>🟡 Medium</option>
-                    <option value="3">🔴 Hard</option>
+                    <option value="1">⚪ Easy (Random)</option>
+                    <option value="2" selected>🟡 Medium (Smart)</option>
+                    <option value="3">🔴 Hard (Aggressive)</option>
                 </select>
                 <div class="btn-group full" style="margin-top: 25px;">
                     <button class="btn-primary" id="newGame">🎮 New Game</button>
-                    <button class="btn-primary" id="undo">↩️ Undo</button>
                     <button class="btn-primary" id="flip">🔄 Flip</button>
                     <button class="btn-danger" id="reset">🗑️ Reset</button>
                 </div>
+                <div class="status-message" id="gameStatus">Ready to play!</div>
             </div>
 
             <div class="board-wrapper">
@@ -516,26 +497,28 @@
 
             <div class="right-panel">
                 <div class="panel">
-                    <div class="panel-title">📋 Moves</div>
+                    <div class="panel-title">📋 Move History</div>
                     <div class="move-history" id="moveHistory"></div>
                 </div>
+
                 <div class="panel">
-                    <div class="panel-title">💾 Save</div>
+                    <div class="panel-title">💾 Save Game</div>
                     <div class="btn-group full">
-                        <button class="btn-primary" id="exportBtn">📥 Export</button>
+                        <button class="btn-primary" id="exportBtn">📥 Export PGN</button>
                         <button class="btn-primary" id="saveBtn">💿 Save</button>
                         <button class="btn-primary" id="loadBtn">📂 Load</button>
                     </div>
                 </div>
+
                 <div class="panel">
-                    <div class="panel-title">♜ Captured</div>
+                    <div class="panel-title">♜ Captured Pieces</div>
                     <div class="captured">
                         <div class="captured-group">
-                            <h4>⚪ White</h4>
+                            <h4>⚪ White Lost</h4>
                             <div class="pieces-row" id="capturedW"></div>
                         </div>
                         <div class="captured-group">
-                            <h4>⚫ Black</h4>
+                            <h4>⚫ Black Lost</h4>
                             <div class="pieces-row" id="capturedB"></div>
                         </div>
                     </div>
@@ -558,21 +541,20 @@
             reset() {
                 this.board = {};
                 const setup = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'.split('/');
-                let idx = 0;
                 setup.forEach((row, r) => {
                     let col = 0;
                     for (let c of row) {
                         if (/\d/.test(c)) col += parseInt(c);
-                        else {
-                            this.board[r * 8 + col] = c;
-                            col++;
-                        }
+                        else this.board[r * 8 + col++] = c;
                     }
                 });
                 this.turn = 'w';
                 this.moveHistory = [];
                 this.capturedW = [];
                 this.capturedB = [];
+                this.enPassantTarget = null;
+                this.castleRights = {wK: true, wQ: true, bK: true, bQ: true};
+                this.halfMoveClock = 0;
             }
 
             getPiece(sq) { return this.board[sq] || null; }
@@ -587,39 +569,99 @@
                 return piece === piece.toUpperCase() ? 'w' : 'b';
             }
 
-            getLegalMoves(sq) {
-                const piece = this.board[sq];
-                if (!piece) return [];
-                const color = this.getColor(piece);
-                if (color !== this.turn) return [];
+            isAttacked(sq, byColor) {
+                for (let i = 0; i < 64; i++) {
+                    const piece = this.board[i];
+                    if (piece && this.getColor(piece) === byColor) {
+                        const moves = this.getLegalMovesFor(i, piece);
+                        if (moves.includes(sq)) return true;
+                    }
+                }
+                return false;
+            }
 
-                const moves = [];
+            isInCheck(color) {
+                let kingPos = null;
+                for (let i = 0; i < 64; i++) {
+                    if (this.board[i] === (color === 'w' ? 'K' : 'k')) {
+                        kingPos = i;
+                        break;
+                    }
+                }
+                return kingPos !== null && this.isAttacked(kingPos, color === 'w' ? 'b' : 'w');
+            }
+
+            getLegalMovesFor(sq, piece) {
+                const color = this.getColor(piece);
                 const type = piece.toUpperCase();
                 const row = Math.floor(sq / 8);
                 const col = sq % 8;
+                const moves = [];
+
+                const addMove = (target) => {
+                    if (target < 0 || target > 63) return;
+                    const tr = Math.floor(target / 8);
+                    const tc = target % 8;
+                    const targetPiece = this.board[target];
+                    if (!targetPiece || this.getColor(targetPiece) !== color) {
+                        moves.push(target);
+                    }
+                };
 
                 if (type === 'P') {
                     const dir = color === 'w' ? -1 : 1;
+                    const startRow = color === 'w' ? 6 : 1;
+                    
+                    // Forward move
                     const forward = sq + dir * 8;
-                    if (forward >= 0 && forward < 64 && !this.board[forward]) moves.push(forward);
-                    [sq + dir * 8 - 1, sq + dir * 8 + 1].forEach(t => {
-                        if (t >= 0 && t < 64 && this.board[t] && this.getColor(this.board[t]) !== color) moves.push(t);
-                    });
-                } else if (type === 'N') {
-                    [6, 10, 15, 17, -6, -10, -15, -17].forEach(d => {
-                        const t = sq + d;
-                        if (t >= 0 && t < 64 && (!this.board[t] || this.getColor(this.board[t]) !== color)) moves.push(t);
-                    });
-                } else if (type === 'K') {
-                    for (let i = -9; i <= 9; i++) {
-                        if (Math.abs(i) <= 1 && sq + i >= 0 && sq + i < 64) {
-                            const t = sq + i;
-                            if (!this.board[t] || this.getColor(this.board[t]) !== color) moves.push(t);
+                    if (forward >= 0 && forward < 64 && !this.board[forward]) {
+                        moves.push(forward);
+                        
+                        // Double move from start
+                        if (row === startRow) {
+                            const forward2 = sq + dir * 16;
+                            if (!this.board[forward2]) moves.push(forward2);
                         }
                     }
-                } else if (['R', 'B', 'Q'].includes(type)) {
-                    const dirs = type === 'R' ? [1, -1, 8, -8] : type === 'B' ? [7, -7, 9, -9] : [1, -1, 8, -8, 7, -7, 9, -9];
-                    dirs.forEach(dir => {
+                    
+                    // Captures
+                    [sq + dir * 8 - 1, sq + dir * 8 + 1].forEach(t => {
+                        if (t >= 0 && t < 64 && this.board[t] && this.getColor(this.board[t]) !== color) {
+                            moves.push(t);
+                        }
+                    });
+                } else if (type === 'N') {
+                    [6, 10, 15, 17, -6, -10, -15, -17].forEach(d => addMove(sq + d));
+                } else if (type === 'K') {
+                    for (let i = -9; i <= 9; i++) {
+                        if (Math.abs(i) <= 1) addMove(sq + i);
+                    }
+                } else if (type === 'R') {
+                    [1, -1, 8, -8].forEach(dir => {
+                        let t = sq + dir;
+                        while (t >= 0 && t < 64 && Math.abs((t % 8) - col) <= 7) {
+                            if (this.board[t]) {
+                                if (this.getColor(this.board[t]) !== color) moves.push(t);
+                                break;
+                            }
+                            moves.push(t);
+                            t += dir;
+                        }
+                    });
+                } else if (type === 'B') {
+                    [7, -7, 9, -9].forEach(dir => {
+                        let t = sq + dir;
+                        while (t >= 0 && t < 64) {
+                            if (this.board[t]) {
+                                if (this.getColor(this.board[t]) !== color) moves.push(t);
+                                break;
+                            }
+                            moves.push(t);
+                            t += dir;
+                        }
+                    });
+                } else if (type === 'Q') {
+                    [1, -1, 8, -8, 7, -7, 9, -9].forEach(dir => {
                         let t = sq + dir;
                         while (t >= 0 && t < 64 && Math.abs((t % 8) - col) <= 7) {
                             if (this.board[t]) {
@@ -635,9 +677,28 @@
                 return moves;
             }
 
+            getLegalMoves(sq) {
+                const piece = this.board[sq];
+                if (!piece || this.getColor(piece) !== this.turn) return [];
+
+                const moves = this.getLegalMovesFor(sq, piece);
+                
+                // Filter out moves that leave king in check
+                return moves.filter(to => {
+                    const captured = this.board[to];
+                    this.board[to] = piece;
+                    delete this.board[sq];
+                    const inCheck = this.isInCheck(this.turn);
+                    this.board[sq] = piece;
+                    this.board[to] = captured;
+                    return !inCheck;
+                });
+            }
+
             movePiece(from, to) {
                 const piece = this.board[from];
                 const captured = this.board[to];
+                
                 if (captured) {
                     if (this.getColor(captured) === 'w') this.capturedW.push(captured);
                     else this.capturedB.push(captured);
@@ -653,11 +714,38 @@
                 this.turn = this.turn === 'w' ? 'b' : 'w';
                 return true;
             }
+
+            evaluatePosition() {
+                let score = 0;
+                const pieceValues = {P: 1, N: 3, B: 3.5, R: 5, Q: 9};
+                
+                for (let i = 0; i < 64; i++) {
+                    const piece = this.board[i];
+                    if (piece) {
+                        const value = pieceValues[piece.toUpperCase()] || 0;
+                        score += (this.getColor(piece) === 'w' ? value : -value);
+                    }
+                }
+                
+                // Favor center positions for pieces
+                for (let i = 0; i < 64; i++) {
+                    const piece = this.board[i];
+                    if (piece && piece !== piece.toUpperCase() === false) {
+                        const row = Math.floor(i / 8);
+                        const col = i % 8;
+                        const distance = Math.abs(3.5 - row) + Math.abs(3.5 - col);
+                        score += (this.getColor(piece) === 'w' ? 0.1 : -0.1) * (7 - distance);
+                    }
+                }
+                
+                return score;
+            }
         }
 
         const game = new Chess();
         let selected = null;
         let validMoves = [];
+        let difficulty = 2;
 
         function render() {
             const board = document.getElementById('chessboard');
@@ -670,7 +758,6 @@
                 const isLight = (row + col) % 2 === 0;
 
                 sq.className = `square ${isLight ? 'light' : 'dark'}`;
-                sq.id = `sq-${i}`;
                 sq.onclick = () => selectSquare(i);
 
                 if (selected === i) sq.classList.add('selected');
@@ -678,7 +765,8 @@
 
                 if (game.board[i]) {
                     const piece = document.createElement('span');
-                    piece.className = 'piece';
+                    const color = game.getColor(game.board[i]);
+                    piece.className = `piece ${color === 'w' ? 'white' : 'black'}`;
                     piece.textContent = game.getPieceSymbol(game.board[i]);
                     sq.appendChild(piece);
                 }
@@ -690,14 +778,18 @@
         }
 
         function selectSquare(sq) {
-            if (game.turn === 'b') return;
+            if (game.turn === 'b') {
+                updateStatus('AI is thinking...', false);
+                return;
+            }
 
             if (selected !== null && validMoves.includes(sq)) {
                 game.movePiece(selected, sq);
                 selected = null;
                 validMoves = [];
                 render();
-                setTimeout(aiMove, 800);
+                updateStatus('White moved. AI thinking...', false);
+                setTimeout(aiMove, 1000);
             } else {
                 selected = sq;
                 validMoves = game.getLegalMoves(sq);
@@ -707,37 +799,90 @@
 
         function aiMove() {
             if (game.turn === 'w') return;
+
             const moves = [];
             for (let i = 0; i < 64; i++) {
                 const piece = game.board[i];
                 if (piece && game.getColor(piece) === 'b') {
                     const legal = game.getLegalMoves(i);
-                    legal.forEach(to => moves.push({from: i, to}));
+                    legal.forEach(to => moves.push({from: i, to, piece}));
                 }
             }
-            if (moves.length) {
-                const move = moves[Math.floor(Math.random() * moves.length)];
-                game.movePiece(move.from, move.to);
-                render();
+
+            if (!moves.length) {
+                if (game.isInCheck('b')) {
+                    updateStatus('Checkmate! White Wins!', true);
+                } else {
+                    updateStatus('Stalemate! Draw!', false);
+                }
+                return;
             }
+
+            let bestMove = moves[0];
+
+            if (difficulty >= 2) {
+                // Smart AI: prioritize captures and threats
+                let bestScore = -999;
+                moves.forEach(move => {
+                    let score = 0;
+                    if (game.board[move.to]) {
+                        const capturedValue = {P: 1, N: 3, B: 3.5, R: 5, Q: 9};
+                        score += capturedValue[game.board[move.to].toUpperCase()] * 10;
+                    }
+                    if (difficulty === 3) {
+                        // Hard: also consider position
+                        const row = Math.floor(move.to / 8);
+                        const col = move.to % 8;
+                        const centerDistance = Math.abs(3.5 - row) + Math.abs(3.5 - col);
+                        score += (7 - centerDistance) * 0.5;
+                    }
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = move;
+                    }
+                });
+            } else {
+                // Easy: random move
+                bestMove = moves[Math.floor(Math.random() * moves.length)];
+            }
+
+            game.movePiece(bestMove.from, bestMove.to);
+            render();
+
+            if (game.isInCheck('w')) {
+                if (!game.getLegalMoves(game.board.indexOf ? 64 : -1)) {
+                    updateStatus('Checkmate! Black Wins!', true);
+                } else {
+                    updateStatus('White in Check!', true);
+                }
+            } else {
+                updateStatus('Black moved. Your turn!', false);
+            }
+        }
+
+        function updateStatus(msg, isDanger) {
+            const elem = document.getElementById('gameStatus');
+            elem.textContent = msg;
+            if (isDanger) elem.classList.add('danger');
+            else elem.classList.remove('danger');
         }
 
         function updateUI() {
-            document.getElementById('status').textContent = game.turn === 'w' ? 'White\'s Turn' : 'Black\'s Turn';
+            document.getElementById('status').textContent = game.turn === 'w' ? "White's Turn" : "Black's Turn";
             document.getElementById('moveCount').textContent = game.moveHistory.length;
             document.getElementById('moveHistory').innerHTML = game.moveHistory.map(m => `<div class="move-tag">${m}</div>`).join('');
-            document.getElementById('capturedW').innerHTML = game.capturedB.map(p => game.getPieceSymbol(p)).join('');
-            document.getElementById('capturedB').innerHTML = game.capturedW.map(p => game.getPieceSymbol(p)).join('');
+            document.getElementById('capturedW').innerHTML = game.capturedB.map(p => `<span class="piece black">${game.getPieceSymbol(p)}</span>`).join('');
+            document.getElementById('capturedB').innerHTML = game.capturedW.map(p => `<span class="piece white">${game.getPieceSymbol(p)}</span>`).join('');
         }
 
-        document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); };
-        document.getElementById('undo').onclick = () => { if (game.moveHistory.length > 0) render(); };
+        document.getElementById('difficulty').onchange = (e) => difficulty = parseInt(e.target.value);
+        document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); updateStatus('New game started!', false); };
         document.getElementById('flip').onclick = () => {
             const b = document.getElementById('chessboard');
             b.style.transform = b.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
         };
         document.getElementById('reset').onclick = () => {
-            if (confirm('Reset game?')) { game.reset(); selected = null; validMoves = []; render(); }
+            if (confirm('Reset game?')) { game.reset(); selected = null; validMoves = []; render(); updateStatus('Game reset!', false); }
         };
         document.getElementById('exportBtn').onclick = () => {
             const a = document.createElement('a');
@@ -746,8 +891,8 @@
             a.click();
         };
         document.getElementById('saveBtn').onclick = () => {
-            localStorage.setItem('chess', JSON.stringify({board: game.board, history: game.moveHistory}));
-            alert('✓ Game saved!');
+            localStorage.setItem('chess', JSON.stringify({board: game.board, history: game.moveHistory, turn: game.turn}));
+            updateStatus('✓ Game saved!', false);
         };
         document.getElementById('loadBtn').onclick = () => {
             const data = localStorage.getItem('chess');
@@ -755,15 +900,16 @@
                 const saved = JSON.parse(data);
                 game.board = saved.board;
                 game.moveHistory = saved.history;
-                game.turn = 'w';
+                game.turn = saved.turn;
                 render();
-                alert('✓ Game loaded!');
+                updateStatus('✓ Game loaded!', false);
             } else {
-                alert('No saved game');
+                updateStatus('No saved game', true);
             }
         };
 
         render();
+        updateStatus('Ready to play! White to move.', false);
     </script>
 </body>
 </html>
