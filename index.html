@@ -3,27 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>too7a Chess - Premium AI Edition</title>
+    <title>too7a Chess - FIDE Compliant</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --gold: #d4af37;
-            --white-piece: #f5e6d3;
-            --black-piece: #2c2c2c;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --gold: #d4af37; --white-piece: #f5e6d3; --black-piece: #2c2c2c; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #0f1419 0%, #1a1f3a 50%, #16213e 100%);
@@ -34,211 +19,88 @@
             color: #f0f0f0;
         }
 
-        .app {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent),
-                        radial-gradient(circle at bottom left, rgba(15, 52, 96, 0.2), transparent);
-            overflow-y: auto;
-        }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            border-bottom: 3px solid var(--gold);
-            background: linear-gradient(180deg, rgba(212, 175, 55, 0.05), transparent);
-            animation: slideDown 0.8s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .app { width: 100%; height: 100%; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { text-align: center; padding: 30px 20px; border-bottom: 3px solid var(--gold); }
         .header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 4em;
-            font-weight: 900;
+            font-size: 3em;
             background: linear-gradient(180deg, #d4af37 0%, #f0e6d2 50%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
-
-        .header p {
-            font-size: 1.1em;
-            color: #c0c0c0;
-            letter-spacing: 2px;
-            font-weight: 300;
-        }
+        .header p { font-size: 0.95em; color: #c0c0c0; letter-spacing: 2px; }
 
         .container {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 700px 1fr;
-            gap: 40px;
-            padding: 40px;
-            max-width: 2000px;
+            grid-template-columns: 280px 700px 280px;
+            gap: 30px;
+            padding: 30px;
+            max-width: 1800px;
             margin: 0 auto;
-            animation: fadeIn 0.8s ease-out 0.2s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            width: 100%;
         }
 
         .panel {
             background: linear-gradient(135deg, rgba(30, 33, 62, 0.8), rgba(15, 52, 96, 0.6));
             backdrop-filter: blur(20px);
             border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 175, 55, 0.2);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-            animation: panelSlide 0.8s ease-out backwards;
-        }
-
-        @keyframes panelSlide {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel:hover {
-            border-color: rgba(212, 175, 55, 0.6);
-            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.15), inset 0 1px 0 rgba(212, 175, 55, 0.3);
-            transform: translateY(-5px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         .panel-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5em;
+            font-size: 1.2em;
             color: var(--gold);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 2px solid rgba(212, 175, 55, 0.2);
-            padding-bottom: 15px;
+            padding-bottom: 10px;
             font-weight: 700;
         }
 
-        .panel-title::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--gold);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            align-items: center;
-        }
-
-        .stat-row:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: #a8a8a8;
-            font-weight: 500;
-            font-size: 0.95em;
-        }
-
-        .stat-value {
-            color: var(--gold);
-            font-weight: 700;
-            font-size: 1.1em;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-        }
+        .stat-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 0.9em; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .stat-label { color: #a8a8a8; }
+        .stat-value { color: var(--gold); font-weight: 700; }
 
         select {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: rgba(15, 52, 96, 0.5);
             border: 2px solid rgba(212, 175, 55, 0.3);
             color: var(--gold);
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95em;
             margin-top: 10px;
-        }
-
-        select:hover, select:focus {
-            border-color: var(--gold);
-            background: rgba(15, 52, 96, 0.7);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-            outline: none;
-        }
-
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .btn-group.full {
-            grid-template-columns: 1fr;
+            font-size: 0.9em;
         }
 
         button {
-            padding: 14px 20px;
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
             border: 2px solid var(--gold);
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
             color: var(--gold);
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.85em;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
-        button:hover {
-            border-color: var(--gold);
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2));
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .btn-danger {
-            border-color: #e74c3c;
-            color: #e74c3c;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(231, 76, 60, 0.2));
-            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
-        }
-
-        .board-wrapper {
-            grid-column: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: boardSlide 0.8s ease-out 0.4s both;
-        }
-
-        @keyframes boardSlide {
-            from { opacity: 0; transform: scale(0.95) rotateX(20deg); }
-            to { opacity: 1; transform: scale(1) rotateX(0); }
-        }
+        button:hover { background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2)); transform: translateY(-2px); }
+        button.danger { border-color: #e74c3c; color: #e74c3c; }
+        button.danger:hover { background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(231, 76, 60, 0.2)); }
 
         .chessboard {
             display: grid;
@@ -248,212 +110,82 @@
             width: 100%;
             aspect-ratio: 1;
             background: linear-gradient(135deg, #3d2817 0%, #2a1810 100%);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
             border: 4px solid var(--gold);
-            position: relative;
         }
 
         .square {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 3.5em;
+            font-size: 3em;
             cursor: pointer;
             user-select: none;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.2s ease;
             position: relative;
         }
 
-        .square::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
-            pointer-events: none;
-            border-radius: 8px;
-        }
+        .square.light { background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%); }
+        .square.dark { background: linear-gradient(135deg, #a68875 0%, #8b6f47 100%); }
+        .square:hover { filter: brightness(1.2); transform: scale(1.03); }
+        .square.selected { background: linear-gradient(135deg, #ffd700, #ffed4e) !important; box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5); animation: pulse 0.6s ease-in-out infinite; }
 
-        .square.light {
-            background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
-        }
+        @keyframes pulse { 0%, 100% { transform: scale(1.03); } 50% { transform: scale(1.08); } }
 
-        .square.dark {
-            background: linear-gradient(135deg, #a68875 0%, #8b6f47 100%);
-        }
-
-        .square:hover {
-            filter: brightness(1.2) saturate(1.1);
-            transform: scale(1.05);
-        }
-
-        .square.selected {
-            background: linear-gradient(135deg, #ffd700, #ffed4e) !important;
-            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.5);
-            animation: pulse 0.6s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1.05); }
-            50% { transform: scale(1.1); }
-        }
-
-        .square.valid-move::after {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background: radial-gradient(circle, rgba(15, 52, 96, 0.8), rgba(15, 52, 96, 0.4));
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(15, 52, 96, 0.6);
-        }
-
-        .square.capture::after {
-            content: '●';
-            font-size: 0.6em;
-            color: #e74c3c;
-            animation: throb 0.8s ease-in-out infinite;
-        }
-
-        @keyframes throb {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
+        .square.valid-move::after { content: ''; width: 14px; height: 14px; background: radial-gradient(circle, rgba(15, 52, 96, 0.8), rgba(15, 52, 96, 0.4)); border-radius: 50%; }
+        .square.capture::after { content: '●'; font-size: 0.5em; color: #e74c3c; }
 
         .piece {
             position: relative;
             z-index: 2;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
             transition: all 0.15s ease;
             cursor: grab;
-            user-select: none;
         }
 
-        .piece.white {
-            color: var(--white-piece);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-        }
+        .piece.white { color: var(--white-piece); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); }
+        .piece.black { color: var(--black-piece); text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3); }
+        .piece:hover { filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.6)); transform: scale(1.12) translateY(-3px); }
 
-        .piece.black {
-            color: var(--black-piece);
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
-        }
-
-        .piece:hover {
-            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6)) brightness(1.2);
-            transform: scale(1.15) translateY(-5px);
-        }
-
-        .piece:active {
-            cursor: grabbing;
-            transform: scale(1.2) translateY(-8px);
-        }
-
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .move-history {
-            max-height: 300px;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-        }
-
+        .move-history { max-height: 200px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
         .move-tag {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1));
             border: 1px solid rgba(212, 175, 55, 0.4);
             color: var(--gold);
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 0.85em;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .move-tag:hover {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.2));
-            border-color: var(--gold);
-            transform: translateY(-2px);
-        }
-
-        .captured {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .captured-group h4 {
-            font-size: 0.8em;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .pieces-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            font-size: 2em;
-            line-height: 1;
-        }
-
-        .status-message {
-            padding: 15px;
+        .status-box {
+            padding: 12px;
             background: rgba(212, 175, 55, 0.2);
             border-left: 4px solid var(--gold);
-            border-radius: 8px;
+            border-radius: 6px;
             color: var(--gold);
             font-weight: 600;
-            margin-top: 20px;
+            margin-top: 15px;
+            font-size: 0.85em;
             text-align: center;
         }
 
-        .status-message.danger {
-            background: rgba(231, 76, 60, 0.2);
-            border-left-color: #e74c3c;
-            color: #e74c3c;
-        }
+        .status-box.check { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+        .pieces-row { display: flex; gap: 4px; flex-wrap: wrap; font-size: 1.5em; }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(212, 175, 55, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold), #a68857); border-radius: 10px; }
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--gold), #a68857);
-            border-radius: 10px;
-        }
-
-        @media (max-width: 1400px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 20px;
-            }
-
-            .board-wrapper {
-                grid-column: auto;
-                max-width: 600px;
-                justify-self: center;
-            }
+        @media (max-width: 1200px) {
+            .container { grid-template-columns: 1fr; gap: 20px; }
+            .header h1 { font-size: 2.2em; }
+            .chessboard { max-width: 500px; justify-self: center; }
         }
     </style>
 </head>
@@ -461,15 +193,15 @@
     <div class="app">
         <div class="header">
             <h1>♞ TOO7A CHESS ♞</h1>
-            <p>INTELLIGENT AI ENGINE</p>
+            <p>FIDE INTERNATIONAL RULES - COMPLETE CHESS ENGINE</p>
         </div>
 
         <div class="container">
-            <div class="panel" style="grid-column: 1;">
-                <div class="panel-title">⚙️ Game Control</div>
+            <div class="panel">
+                <div class="panel-title">⚙️ Controls</div>
                 <div class="stat-row">
                     <span class="stat-label">Status</span>
-                    <span class="stat-value" id="status">White's Turn</span>
+                    <span class="stat-value" id="status">White</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Moves</span>
@@ -479,437 +211,36 @@
                     <span class="stat-label">Difficulty</span>
                 </div>
                 <select id="difficulty">
-                    <option value="1">⚪ Easy (Random)</option>
-                    <option value="2" selected>🟡 Medium (Smart)</option>
-                    <option value="3">🔴 Hard (Aggressive)</option>
+                    <option value="1">Easy (Random)</option>
+                    <option value="2" selected>Medium (Smart)</option>
+                    <option value="3">Hard (Tactical)</option>
                 </select>
-                <div class="btn-group full" style="margin-top: 25px;">
-                    <button class="btn-primary" id="newGame">🎮 New Game</button>
-                    <button class="btn-primary" id="flip">🔄 Flip</button>
-                    <button class="btn-danger" id="reset">🗑️ Reset</button>
-                </div>
-                <div class="status-message" id="gameStatus">Ready to play!</div>
+                <button id="newGame">🎮 New Game</button>
+                <button id="flip">🔄 Flip Board</button>
+                <button class="danger" id="reset">🗑️ Reset</button>
+                <div class="status-box" id="gameStatus">Ready to play!</div>
             </div>
 
-            <div class="board-wrapper">
-                <div id="chessboard" class="chessboard"></div>
-            </div>
+            <div class="chessboard" id="chessboard"></div>
 
-            <div class="right-panel">
-                <div class="panel">
-                    <div class="panel-title">📋 Move History</div>
-                    <div class="move-history" id="moveHistory"></div>
-                </div>
+            <div class="panel">
+                <div class="panel-title">📋 Move History</div>
+                <div class="move-history" id="moveHistory"></div>
+                
+                <div class="panel-title" style="margin-top: 20px;">💾 Save Game</div>
+                <button id="exportBtn">📥 Export PGN</button>
+                <button id="saveBtn">💿 Save</button>
+                <button id="loadBtn">📂 Load</button>
 
-                <div class="panel">
-                    <div class="panel-title">💾 Save Game</div>
-                    <div class="btn-group full">
-                        <button class="btn-primary" id="exportBtn">📥 Export PGN</button>
-                        <button class="btn-primary" id="saveBtn">💿 Save</button>
-                        <button class="btn-primary" id="loadBtn">📂 Load</button>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-title">♜ Captured Pieces</div>
-                    <div class="captured">
-                        <div class="captured-group">
-                            <h4>⚪ White Lost</h4>
-                            <div class="pieces-row" id="capturedW"></div>
-                        </div>
-                        <div class="captured-group">
-                            <h4>⚫ Black Lost</h4>
-                            <div class="pieces-row" id="capturedB"></div>
-                        </div>
-                    </div>
-                </div>
+                <div class="panel-title" style="margin-top: 20px;">♜ Captured Pieces</div>
+                <div style="font-size: 0.85em; color: #a8a8a8; margin-bottom: 8px;">⚪ White Lost</div>
+                <div class="pieces-row" id="capturedW"></div>
+                <div style="font-size: 0.85em; color: #a8a8a8; margin: 12px 0 8px 0;">⚫ Black Lost</div>
+                <div class="pieces-row" id="capturedB"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        const PIECES = {
-            'wP': '♙', 'wN': '♘', 'wB': '♗', 'wR': '♖', 'wQ': '♕', 'wK': '♔',
-            'bP': '♟', 'bN': '♞', 'bB': '♝', 'bR': '♜', 'bQ': '♛', 'bK': '♚'
-        };
-
-        class Chess {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.board = {};
-                const setup = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'.split('/');
-                setup.forEach((row, r) => {
-                    let col = 0;
-                    for (let c of row) {
-                        if (/\d/.test(c)) col += parseInt(c);
-                        else this.board[r * 8 + col++] = c;
-                    }
-                });
-                this.turn = 'w';
-                this.moveHistory = [];
-                this.capturedW = [];
-                this.capturedB = [];
-                this.enPassantTarget = null;
-                this.castleRights = {wK: true, wQ: true, bK: true, bQ: true};
-                this.halfMoveClock = 0;
-            }
-
-            getPiece(sq) { return this.board[sq] || null; }
-
-            getPieceSymbol(piece) {
-                if (!piece) return '';
-                const key = (piece === piece.toUpperCase() ? 'w' : 'b') + piece.toUpperCase();
-                return PIECES[key] || '?';
-            }
-
-            getColor(piece) {
-                return piece === piece.toUpperCase() ? 'w' : 'b';
-            }
-
-            isAttacked(sq, byColor) {
-                for (let i = 0; i < 64; i++) {
-                    const piece = this.board[i];
-                    if (piece && this.getColor(piece) === byColor) {
-                        const moves = this.getLegalMovesFor(i, piece);
-                        if (moves.includes(sq)) return true;
-                    }
-                }
-                return false;
-            }
-
-            isInCheck(color) {
-                let kingPos = null;
-                for (let i = 0; i < 64; i++) {
-                    if (this.board[i] === (color === 'w' ? 'K' : 'k')) {
-                        kingPos = i;
-                        break;
-                    }
-                }
-                return kingPos !== null && this.isAttacked(kingPos, color === 'w' ? 'b' : 'w');
-            }
-
-            getLegalMovesFor(sq, piece) {
-                const color = this.getColor(piece);
-                const type = piece.toUpperCase();
-                const row = Math.floor(sq / 8);
-                const col = sq % 8;
-                const moves = [];
-
-                const addMove = (target) => {
-                    if (target < 0 || target > 63) return;
-                    const tr = Math.floor(target / 8);
-                    const tc = target % 8;
-                    const targetPiece = this.board[target];
-                    if (!targetPiece || this.getColor(targetPiece) !== color) {
-                        moves.push(target);
-                    }
-                };
-
-                if (type === 'P') {
-                    const dir = color === 'w' ? -1 : 1;
-                    const startRow = color === 'w' ? 6 : 1;
-                    
-                    // Forward move
-                    const forward = sq + dir * 8;
-                    if (forward >= 0 && forward < 64 && !this.board[forward]) {
-                        moves.push(forward);
-                        
-                        // Double move from start
-                        if (row === startRow) {
-                            const forward2 = sq + dir * 16;
-                            if (!this.board[forward2]) moves.push(forward2);
-                        }
-                    }
-                    
-                    // Captures
-                    [sq + dir * 8 - 1, sq + dir * 8 + 1].forEach(t => {
-                        if (t >= 0 && t < 64 && this.board[t] && this.getColor(this.board[t]) !== color) {
-                            moves.push(t);
-                        }
-                    });
-                } else if (type === 'N') {
-                    [6, 10, 15, 17, -6, -10, -15, -17].forEach(d => addMove(sq + d));
-                } else if (type === 'K') {
-                    for (let i = -9; i <= 9; i++) {
-                        if (Math.abs(i) <= 1) addMove(sq + i);
-                    }
-                } else if (type === 'R') {
-                    [1, -1, 8, -8].forEach(dir => {
-                        let t = sq + dir;
-                        while (t >= 0 && t < 64 && Math.abs((t % 8) - col) <= 7) {
-                            if (this.board[t]) {
-                                if (this.getColor(this.board[t]) !== color) moves.push(t);
-                                break;
-                            }
-                            moves.push(t);
-                            t += dir;
-                        }
-                    });
-                } else if (type === 'B') {
-                    [7, -7, 9, -9].forEach(dir => {
-                        let t = sq + dir;
-                        while (t >= 0 && t < 64) {
-                            if (this.board[t]) {
-                                if (this.getColor(this.board[t]) !== color) moves.push(t);
-                                break;
-                            }
-                            moves.push(t);
-                            t += dir;
-                        }
-                    });
-                } else if (type === 'Q') {
-                    [1, -1, 8, -8, 7, -7, 9, -9].forEach(dir => {
-                        let t = sq + dir;
-                        while (t >= 0 && t < 64 && Math.abs((t % 8) - col) <= 7) {
-                            if (this.board[t]) {
-                                if (this.getColor(this.board[t]) !== color) moves.push(t);
-                                break;
-                            }
-                            moves.push(t);
-                            t += dir;
-                        }
-                    });
-                }
-
-                return moves;
-            }
-
-            getLegalMoves(sq) {
-                const piece = this.board[sq];
-                if (!piece || this.getColor(piece) !== this.turn) return [];
-
-                const moves = this.getLegalMovesFor(sq, piece);
-                
-                // Filter out moves that leave king in check
-                return moves.filter(to => {
-                    const captured = this.board[to];
-                    this.board[to] = piece;
-                    delete this.board[sq];
-                    const inCheck = this.isInCheck(this.turn);
-                    this.board[sq] = piece;
-                    this.board[to] = captured;
-                    return !inCheck;
-                });
-            }
-
-            movePiece(from, to) {
-                const piece = this.board[from];
-                const captured = this.board[to];
-                
-                if (captured) {
-                    if (this.getColor(captured) === 'w') this.capturedW.push(captured);
-                    else this.capturedB.push(captured);
-                }
-
-                this.board[to] = piece;
-                delete this.board[from];
-
-                const fromSq = String.fromCharCode(97 + (from % 8)) + (8 - Math.floor(from / 8));
-                const toSq = String.fromCharCode(97 + (to % 8)) + (8 - Math.floor(to / 8));
-                this.moveHistory.push(fromSq + toSq);
-
-                this.turn = this.turn === 'w' ? 'b' : 'w';
-                return true;
-            }
-
-            evaluatePosition() {
-                let score = 0;
-                const pieceValues = {P: 1, N: 3, B: 3.5, R: 5, Q: 9};
-                
-                for (let i = 0; i < 64; i++) {
-                    const piece = this.board[i];
-                    if (piece) {
-                        const value = pieceValues[piece.toUpperCase()] || 0;
-                        score += (this.getColor(piece) === 'w' ? value : -value);
-                    }
-                }
-                
-                // Favor center positions for pieces
-                for (let i = 0; i < 64; i++) {
-                    const piece = this.board[i];
-                    if (piece && piece !== piece.toUpperCase() === false) {
-                        const row = Math.floor(i / 8);
-                        const col = i % 8;
-                        const distance = Math.abs(3.5 - row) + Math.abs(3.5 - col);
-                        score += (this.getColor(piece) === 'w' ? 0.1 : -0.1) * (7 - distance);
-                    }
-                }
-                
-                return score;
-            }
-        }
-
-        const game = new Chess();
-        let selected = null;
-        let validMoves = [];
-        let difficulty = 2;
-
-        function render() {
-            const board = document.getElementById('chessboard');
-            board.innerHTML = '';
-
-            for (let i = 0; i < 64; i++) {
-                const sq = document.createElement('div');
-                const row = Math.floor(i / 8);
-                const col = i % 8;
-                const isLight = (row + col) % 2 === 0;
-
-                sq.className = `square ${isLight ? 'light' : 'dark'}`;
-                sq.onclick = () => selectSquare(i);
-
-                if (selected === i) sq.classList.add('selected');
-                if (validMoves.includes(i)) sq.classList.add(game.board[i] ? 'capture' : 'valid-move');
-
-                if (game.board[i]) {
-                    const piece = document.createElement('span');
-                    const color = game.getColor(game.board[i]);
-                    piece.className = `piece ${color === 'w' ? 'white' : 'black'}`;
-                    piece.textContent = game.getPieceSymbol(game.board[i]);
-                    sq.appendChild(piece);
-                }
-
-                board.appendChild(sq);
-            }
-
-            updateUI();
-        }
-
-        function selectSquare(sq) {
-            if (game.turn === 'b') {
-                updateStatus('AI is thinking...', false);
-                return;
-            }
-
-            if (selected !== null && validMoves.includes(sq)) {
-                game.movePiece(selected, sq);
-                selected = null;
-                validMoves = [];
-                render();
-                updateStatus('White moved. AI thinking...', false);
-                setTimeout(aiMove, 1000);
-            } else {
-                selected = sq;
-                validMoves = game.getLegalMoves(sq);
-                render();
-            }
-        }
-
-        function aiMove() {
-            if (game.turn === 'w') return;
-
-            const moves = [];
-            for (let i = 0; i < 64; i++) {
-                const piece = game.board[i];
-                if (piece && game.getColor(piece) === 'b') {
-                    const legal = game.getLegalMoves(i);
-                    legal.forEach(to => moves.push({from: i, to, piece}));
-                }
-            }
-
-            if (!moves.length) {
-                if (game.isInCheck('b')) {
-                    updateStatus('Checkmate! White Wins!', true);
-                } else {
-                    updateStatus('Stalemate! Draw!', false);
-                }
-                return;
-            }
-
-            let bestMove = moves[0];
-
-            if (difficulty >= 2) {
-                // Smart AI: prioritize captures and threats
-                let bestScore = -999;
-                moves.forEach(move => {
-                    let score = 0;
-                    if (game.board[move.to]) {
-                        const capturedValue = {P: 1, N: 3, B: 3.5, R: 5, Q: 9};
-                        score += capturedValue[game.board[move.to].toUpperCase()] * 10;
-                    }
-                    if (difficulty === 3) {
-                        // Hard: also consider position
-                        const row = Math.floor(move.to / 8);
-                        const col = move.to % 8;
-                        const centerDistance = Math.abs(3.5 - row) + Math.abs(3.5 - col);
-                        score += (7 - centerDistance) * 0.5;
-                    }
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = move;
-                    }
-                });
-            } else {
-                // Easy: random move
-                bestMove = moves[Math.floor(Math.random() * moves.length)];
-            }
-
-            game.movePiece(bestMove.from, bestMove.to);
-            render();
-
-            if (game.isInCheck('w')) {
-                if (!game.getLegalMoves(game.board.indexOf ? 64 : -1)) {
-                    updateStatus('Checkmate! Black Wins!', true);
-                } else {
-                    updateStatus('White in Check!', true);
-                }
-            } else {
-                updateStatus('Black moved. Your turn!', false);
-            }
-        }
-
-        function updateStatus(msg, isDanger) {
-            const elem = document.getElementById('gameStatus');
-            elem.textContent = msg;
-            if (isDanger) elem.classList.add('danger');
-            else elem.classList.remove('danger');
-        }
-
-        function updateUI() {
-            document.getElementById('status').textContent = game.turn === 'w' ? "White's Turn" : "Black's Turn";
-            document.getElementById('moveCount').textContent = game.moveHistory.length;
-            document.getElementById('moveHistory').innerHTML = game.moveHistory.map(m => `<div class="move-tag">${m}</div>`).join('');
-            document.getElementById('capturedW').innerHTML = game.capturedB.map(p => `<span class="piece black">${game.getPieceSymbol(p)}</span>`).join('');
-            document.getElementById('capturedB').innerHTML = game.capturedW.map(p => `<span class="piece white">${game.getPieceSymbol(p)}</span>`).join('');
-        }
-
-        document.getElementById('difficulty').onchange = (e) => difficulty = parseInt(e.target.value);
-        document.getElementById('newGame').onclick = () => { game.reset(); selected = null; validMoves = []; render(); updateStatus('New game started!', false); };
-        document.getElementById('flip').onclick = () => {
-            const b = document.getElementById('chessboard');
-            b.style.transform = b.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
-        };
-        document.getElementById('reset').onclick = () => {
-            if (confirm('Reset game?')) { game.reset(); selected = null; validMoves = []; render(); updateStatus('Game reset!', false); }
-        };
-        document.getElementById('exportBtn').onclick = () => {
-            const a = document.createElement('a');
-            a.href = 'data:text/plain,' + encodeURIComponent(game.moveHistory.join(' '));
-            a.download = 'game.pgn';
-            a.click();
-        };
-        document.getElementById('saveBtn').onclick = () => {
-            localStorage.setItem('chess', JSON.stringify({board: game.board, history: game.moveHistory, turn: game.turn}));
-            updateStatus('✓ Game saved!', false);
-        };
-        document.getElementById('loadBtn').onclick = () => {
-            const data = localStorage.getItem('chess');
-            if (data) {
-                const saved = JSON.parse(data);
-                game.board = saved.board;
-                game.moveHistory = saved.history;
-                game.turn = saved.turn;
-                render();
-                updateStatus('✓ Game loaded!', false);
-            } else {
-                updateStatus('No saved game', true);
-            }
-        };
-
-        render();
-        updateStatus('Ready to play! White to move.', false);
-    </script>
+    <script src="engine.js"></script>
 </body>
 </html>
